@@ -1,0 +1,235 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <script type="text/javascript">
+        function clearDateEstDestino() {
+            detFecsalestDestino.setDate(null);
+        }
+        function clearDateRealDestino() {
+            detFecrsalrealDestino.setDate(null);
+        }
+        function clearDateRealLlegadaDestino() {
+            detFecllegrealDestino.setDate(null);
+        }
+    </script>
+    <p:outputPanel id="panelcargaDestinoOutput">
+        <p:panel id="panelcarDestino" header="Carga Destino" style="width: 100%" toggleable="true">
+
+            <p:dataTable id="dataTablecarDestino" value="#{transporteController.stDetcargsDestino}" var="carDestinosVar" emptyMessage="No se encontraron cargas destino a la carga" styleClass="tablaRes">
+                <p:column headerText="Transportador">
+                    <h:outputText value="#{carDestinosVar.cliTpcconsec.proConsec.proNombre}"/>
+                </p:column>
+
+                <p:column headerText="Ruta">
+                    <h:outputText value="#{carDestinosVar.rutRpconsec.rutConsec.rutNombre}"/>
+                </p:column>
+                <p:column headerText="Puerto Origen">
+                    <h:outputText value="#{carDestinosVar.rutRpconsec.rutConsec.pueOrigen.pueNombre}"/>
+                </p:column>
+                <p:column headerText="Puerto Destino">
+                    <h:outputText value="#{carDestinosVar.rutRpconsec.rutConsec.pueDestino.pueNombre}"/>
+                </p:column>
+                <p:column headerText="Número de Factura">
+                    <h:outputText value="#{carDestinosVar.detFacnum}"/>
+                </p:column>
+                <p:column style="font-size:11px; font-weight: bold">
+                    <p:commandLink value="Ver Traza"  actionListener="#{transporteController.consultaTraza(carDestinosVar)}" onclick="PF('DialogTrazasVar').show()" update=":search:panelPestanas:panelTrazas" immediate="true"/>
+                </p:column>
+                <p:column headerText="Editar" style="font-size:11px; font-weight: bold"  >
+                    <p:commandLink >
+                        <p:graphicImage id="imgEdit" value="/resources/img/editar.png"/>
+                        <p:ajax listener="#{transporteController.consultaCargDestinoEdit(carDestinosVar)}" update=":search:panelPestanas:panelextercarDestino,:search:panelPestanas:panelextercarAerea,:search:panelPestanas:panelextercarMaritima"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+
+            <p:spacer height="30"/>
+            <p:column>
+                <p:commandLink value="Añadir Carga Destino" actionListener="#{transporteController.consultaCargDestino}" update=":search:panelPestanas:panelextercarDestino,:search:panelPestanas:panelextercarAerea,:search:panelPestanas:panelextercarMaritima" immediate="true" rendered="#{transporteController.anadCargDestino}"/>
+            </p:column>
+            <p:spacer height="30"/>
+
+            <p:outputPanel id="panelextercarDestino">
+                <p:panel id="panelFormcarDestino" header="Información" rendered="#{transporteController.flagCargDestino}">
+                    <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Fecha de salida est." for="detFecsalestDestino"/>
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="detFecsalestDestino" value="#{transporteController.stDetcargDestinoCurrent.detFecsalest}" size="12" pattern="dd/MM/yyyy" disabled="#{transporteController.flagbtnfecestsalDestino}" widgetVar="detFecsalestDestino" readonlyInput="true">
+                                    <p:ajax event="dateSelect"  listener="#{transporteController.cambiarFechaestimadaDestino}" update="detFecllegestDestino"/>
+                                </p:calendar>
+                                <p:spacer width="10" />
+
+                                <p:commandLink actionListener="#{transporteController.limpiaFechaestimadaDestino}" update="detFecllegestDestino" immediate="true" onclick="javascript:clearDateEstDestino();" rendered="#{!transporteController.flagbtnfecestsalDestino}">
+                                    <p:graphicImage id="growcd1" value="/resources/img/escobita.png">
+                                        <p:tooltip for="growcd1" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                    </p:graphicImage>
+                                </p:commandLink>
+
+                                <p:commandButton id="BtndetFecsalestDestino" icon="ui-icon-plus" update=":search:panelPestanas:panelFecEstimada" rendered="#{transporteController.flagbtnfecestsalDestino}" actionListener="#{transporteController.edicionFechaEstSalida(carDestinosVar)}"/>  
+
+                                <p:tooltip for="BtndetFecsalestDestino" value="Editar Fecha de salida estimada" />
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Fecha de salida real" for="detFecrsalrealDestino"/>
+                            </p:column>
+
+                            <p:column>
+                                <p:calendar id="detFecrsalrealDestino" value="#{transporteController.stDetcargDestinoCurrent.detFecrsalreal}" size="12" pattern="dd/MM/yyyy" disabled="#{transporteController.flagbtnfecrealsalDestino}" widgetVar="detFecrsalrealDestino" readonlyInput="true">
+                                    <p:ajax event="dateSelect"  listener="#{transporteController.cambiarFechaRealDestino}" update="detFecllegestDestino"/>
+                                </p:calendar>
+                                <p:spacer width="10" />
+                                <p:commandLink actionListener="#{transporteController.limpiaFechaRealDestino}" update="detFecllegestDestino" immediate="true" onclick="javascript:clearDateRealDestino();" rendered="#{!transporteController.flagbtnfecrealsalDestino}">
+                                    <p:graphicImage id="growcd2" value="/resources/img/escobita.png">
+                                        <p:tooltip for="growcd2" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                    </p:graphicImage>
+                                </p:commandLink>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Fecha de llegada estimada" for="detFecllegestDestino"/>
+                            </p:column>
+                            <p:column>    
+                                <p:calendar id="detFecllegestDestino" value="#{transporteController.stDetcargDestinoCurrent.detFecllegest}" size="12" pattern="dd/MM/yyyy" readonlyInput="true" disabled="#{transporteController.flagbtnfecestllegDestino}"/>
+                                <p:commandButton id="BtndetFecllegestDestino" icon="ui-icon-plus" onclick="PF('DialogFecEstimadaVar').show()" update=":search:panelPestanas:panelFecEstimada" rendered="#{transporteController.flagbtnfecestllegDestino and transporteController.stDetcargDestinoCurrent.detConsec != null}" actionListener="#{transporteController.edicionFechaEstLlegada(carDestinosVar)}"/>   
+                                <p:tooltip for="BtndetFecllegestDestino" value="Editar Fecha de llegada estimada" />
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Fecha de llegada real" for="detFecllegrealDestino"/>
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="detFecllegrealDestino" value="#{transporteController.stDetcargDestinoCurrent.detFecllegreal}" size="12" pattern="dd/MM/yyyy" readonlyInput="true" disabled="#{transporteController.flagbtnfecrealllegDestino}" widgetVar="detFecllegrealDestino" />
+                                <p:spacer width="10" />
+                                <p:commandLink update="detFecllegestDestino" immediate="true" onclick="javascript:clearDateRealLlegadaDestino();" rendered="#{!transporteController.flagbtnfecrealllegDestino}">
+                                    <p:graphicImage id="growcd3" value="/resources/img/escobita.png">
+                                        <p:tooltip for="growcd3" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                    </p:graphicImage>
+                                </p:commandLink>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Servicio Proveedor" for="servicioProveedorDestino"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="servicioProveedorDestino" value="#{transporteController.servicioProveedorDestino}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" valueChangeListener="#{transporteController.cambiarServiciosProveedorDestino}" required="true" requiredMessage="El servicio es obligatorio">
+                                    <f:selectItems value="#{transporteController.serviciosProveedor}"/>
+                                    <p:ajax update="proveedorDestino,rutaDestino,tie_transporteDestino,tipDiaDestino,rutaXprovvedorDestinoNombre,detFecllegestDestino"/>
+                                </p:selectOneMenu>    
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Transportador" for="proveedorDestino"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="proveedorDestino" value="#{transporteController.proveedorDestino}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" valueChangeListener="#{transporteController.cambiarProveedorDestino}" required="true" requiredMessage="El transportador es obligatorio">
+                                    <f:selectItems value="#{transporteController.proveedoresDestino}"/>
+                                    <p:ajax update="rutaDestino,tie_transporteDestino,tipDiaDestino,rutaXprovvedorDestinoNombre,detFecllegestDestino"/>
+                                </p:selectOneMenu>    
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Escoja la Ruta" for="rutaDestino"/>
+                            </p:column>
+
+                            <p:column> 
+                                <p:autoComplete id="rutaDestino" panelStyle="overflow : scroll; width : 500px;" dropdown="true" value="#{transporteController.rutaDestino}" emptyMessage="No existen rutas con estos criterios de consulta"
+                                                completeMethod="#{transporteController.getRutasXProveedorDestino}" scrollHeight="400"
+                                                var="p" itemLabel="#{p.rutConsec.rutNombre}" itemValue="#{p}" converter="stRutProvCargaDestinoConverter"  
+                                                forceSelection="true" size="25" valueChangeListener="#{transporteController.cambioRutaDestinohandleSelect}">
+                                    <p:ajax event="itemSelect" update="tie_transporteDestino,tipDiaDestino,rutaXprovvedorDestinoNombre,detFecllegestDestino" />
+                                    <p:column headerText="Ruta">
+                                        #{p.rutConsec.rutNombre}
+                                    </p:column>
+                                    <p:column headerText="Puerto Origen">
+                                        #{p.rutConsec.pueOrigen.pueNombre}
+                                    </p:column>
+                                    <p:column headerText="País Origen">
+                                        #{p.rutConsec.pueOrigen.stCiudad.stDpto.stPais.paiNom}
+                                    </p:column>
+                                    <p:column headerText="Puerto Destino">
+                                        #{p.rutConsec.pueDestino.pueNombre}
+                                    </p:column>
+                                    <p:column headerText="País Destino">
+                                        #{p.rutConsec.pueDestino.stCiudad.stDpto.stPais.paiNom}
+                                    </p:column>
+                                    <p:column headerText="Ubicación puerto Destino">
+                                        #{p.rutConsec.pueDestino.ubiConsec.ubiNombre}
+                                    </p:column>
+                                    <p:column headerText="Tipo de Dia">
+                                        #{p.tipDiaNombre}
+                                    </p:column>
+                                    <p:column headerText="Tiempo de transporte (Días)">
+                                        #{p.tieTransporte}
+                                    </p:column>
+                                </p:autoComplete>
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Ruta Escogida" for="rutaXprovvedorDestinoNombre"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="rutaXprovvedorDestinoNombre" value="#{transporteController.rutaXprovvedorDestinoNombre}" disabled="true" required="true" requiredMessage="La ruta es obligatoria." size="30"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Tiempo Transporte (Días)" for="tie_transporteDestino"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="tie_transporteDestino" value="#{transporteController.stDetcargDestinoCurrent.tie_transporte}" disabled="true">
+                                </p:inputText>
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Tipo de Día" for="tipDiaDestino"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="tipDiaDestino" value="#{transporteController.stDetcargDestinoCurrent.tipDia.tipNombre}" disabled="true"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Factura Carga" for="detFacnumDestino"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="detFacnumDestino" value="#{transporteController.stDetcargDestinoCurrent.detFacnum}"/>
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Valor Factura Carga" for="detFacvalDestino"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="detFacvalDestino" value="#{transporteController.stDetcargDestinoCurrent.detFacval}"/>
+                            </p:column>
+                        </p:row>                         
+                    </p:panelGrid>
+                    <p:spacer/>
+                    <div align="center">
+                        <p:outputPanel>
+                            <p:commandButton value="Guardar" action="#{transporteController.updateCargaDestino}" update="panelcargaDestinoOutput" process="@form"/>  
+                            <p:commandButton value="Cancelar" actionListener="#{transporteController.cancelarCargaDestino}" update="panelcargaDestinoOutput" immediate="true"/>  
+                            <p:commandButton value="Inactivar" actionListener="#{transporteController.inactivarCargDestino}" update="panelcargaDestinoOutput" immediate="true" rendered="#{transporteController.stDetcargDestinoCurrent.carConsec != null}" onclick="if (!confirm('Esta seguro que desea inactivar la carga?'))
+                                        return false;"/>  
+                        </p:outputPanel>
+                    </div>
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+    </p:outputPanel>
+</ui:composition>
+

@@ -1,0 +1,36 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <p:outputPanel id="paneltransporte">
+    <div class="centered">
+        <p:spacer height="3"/>
+        <p:outputPanel>
+            <h:outputText id="labeltab3" value=" Número de la carga: #{consultaCargaController.stCargaCurrent.carConsec}  - Número Documento Transporte: #{consultaCargaController.stCargaCurrent.carNumdoctra}  - Fecha Documento Transporte: " style="width: 85%; background-color: #E0ECF8; font-weight: bold"/>
+            <h:outputText id="label2tab3" value="#{consultaCargaController.stCargaCurrent.carFecdoctra}" style="width: 85%; background-color: #E0ECF8; font-weight: bold">    
+                <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+            </h:outputText>
+        </p:outputPanel>
+        <p:spacer height="3"/>
+    </div>
+    <div align="center">
+        <p:spacer/>
+        <p:outputPanel id="paneltotalcarMaritima">
+            <ui:include src="cargaMaritima.xhtml" />
+        </p:outputPanel>
+        
+        <p:outputPanel id="paneltotalcarAerea">
+            <ui:include src="cargaAerea.xhtml" />
+        </p:outputPanel>
+        
+        <p:spacer/>
+        
+        <p:outputPanel id="paneltotalcarDestino">
+            <ui:include src="cargaDestino.xhtml" />
+        </p:outputPanel>
+    </div>
+        </p:outputPanel>
+</ui:composition>
+

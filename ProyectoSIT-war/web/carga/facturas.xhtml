@@ -1,0 +1,168 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <p:outputPanel id="panelFacturas">
+    <p:panel header="Información de Facturas y Ordenes de Compra">
+        <div class="centered">
+            <p:spacer height="3"/>
+            <p:outputPanel>
+                <h:outputText value=" Número de la carga: #{consultaCargaController.stCargaCurrent.carConsec}" style="width: 85%; background-color: #E0ECF8; font-weight: bold"/>
+            </p:outputPanel>
+            <p:spacer height="3"/>
+        </div>
+        <div align="center">
+            <p:spacer/>
+            <p:panel id="panelOrdenCompra" header="Ordenes de Compra" style="width: 100%" toggleable="true">
+                <p:dataTable id="dataTableOrdenesCompra" value="#{facturasController.stOrdcomps}" var="ordenCompraVar" paginator="true" rows="5" rowsPerPageTemplate="5,10,15" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  emptyMessage="No se encontraron Ordenes de Compra asociadas a la carga" styleClass="tablaRes">
+                    <p:column headerText="Numero de la Orden">
+                        <h:outputText value="#{ordenCompraVar.ordNumero}"/>
+                    </p:column>
+                    <p:column headerText="Fecha de Orden">
+                        <h:outputText value="#{ordenCompraVar.ordFecgen}">
+                            <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Fecha de Entrega">
+                        <h:outputText value="#{ordenCompraVar.ordFecent}">
+                            <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                        </h:outputText>
+                    </p:column>
+
+                    <p:column headerText="Editar" style="font-size:11px; font-weight: bold"  >
+                        <p:commandLink >
+                            <p:graphicImage id="imgEdit" value="/resources/img/editar.png"/>
+                            <p:ajax listener="#{facturasController.consultaOrdenCompraEdit(ordenCompraVar)}" update=":search:panelPestanas:panelexterordenCompra,:search:panelPestanas:facturasdatatable"/>
+                        </p:commandLink>
+                    </p:column>
+
+                    <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold"  >
+                        <p:commandLink action="#{facturasController.eliminarOrdenCompra(ordenCompraVar)}" update=":search:panelPestanas:panelFacturas" process="@form" immediate="true" onclick="if (!confirm('Esta seguro que desea eliminar este registro?'))
+                                    return false;">
+                            <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+
+                <p:spacer height="30"/>
+                <p:column>
+                    <p:commandLink value="Añadir Orden de Compra" actionListener="#{facturasController.consultaOrdenCompra}" update=":search:panelPestanas:panelexterordenCompra,facturasdatatable" immediate="true"/>
+                </p:column>
+                <p:spacer height="30"/>
+
+                <p:outputPanel id="panelexterordenCompra">
+                    <p:panel id="panelFormOrdenCompra" header="Información" rendered="#{facturasController.flagOrdCompras}">
+                        <p:panelGrid columns="4">
+
+                            <p:outputLabel value="Numero de la Orden" for="ordNumero"/>
+                            <p:inputText id="ordNumero" value="#{facturasController.stOrdcompCurrent.ordNumero}" required="true" requiredMessage="El número de la orden es obligatorio."/>
+
+                            <p:outputLabel value="Fecha de Generación" for="ordFecgen"/>
+                            <p:calendar id="ordFecgen" value="#{facturasController.stOrdcompCurrent.ordFecgen}" size="12" pattern="dd/MM/yyyy" readonlyInput="true" required="true" requiredMessage="La fecha de generación es obligatoria."/>
+
+                            <p:outputLabel value="Fecha de Entrega" for="ordFecent"/>
+                            <p:calendar id="ordFecent" value="#{facturasController.stOrdcompCurrent.ordFecent}" size="12" pattern="dd/MM/yyyy" readonlyInput="true" required="true" requiredMessage="La fecha de entrega es obligatoria."/>
+                        </p:panelGrid>
+                        <p:spacer/>
+                        <div align="center">
+                            <p:outputPanel>
+                                <p:commandButton value="Guardar" action="#{facturasController.updateOrdenCompra}" update="dataTableOrdenesCompra,panelexterordenCompra" process="@form"/>  
+                                <p:commandButton value="Cancelar" actionListener="#{facturasController.cancelarOrdenCompra}" update="panelexterordenCompra" immediate="true"/>  
+                            </p:outputPanel>
+                        </div>
+                    </p:panel>
+                </p:outputPanel>
+            </p:panel>
+
+            <p:spacer/>
+
+            <p:panel id="facturasdatatable" header="Facturas" style="width: 100%" toggleable="true">
+                <p:dataTable id="dataTableCargas" value="#{facturasController.stFacturas}" var="facturasVar" paginator="true" rows="5" rowsPerPageTemplate="5,10,15" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                             emptyMessage="No se encontraron facturas asociadas a la carga"
+                             styleClass="tablaRes">
+                    <p:column headerText="Número de la Factura">
+                        <h:outputText value="#{facturasVar.facNumero}"/>
+                    </p:column>
+                    <p:column headerText="Fecha de la Factura">
+                        <h:outputText value="#{facturasVar.facFecha}">
+                            <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                        </h:outputText>
+                    </p:column>
+                    <p:column headerText="Moneda">
+                        <h:outputText value="#{facturasVar.monConsec.monNombre}"/>
+                    </p:column>
+                    <p:column headerText="Valor de la Factura">
+                        <h:outputText value="#{facturasVar.valFactura}"/>
+                    </p:column>
+
+                    <p:column headerText="Editar" style="font-size:11px; font-weight: bold"  >
+                        <p:commandLink >
+                            <p:graphicImage id="imgEdit" value="/resources/img/editar.png"/>
+                            <p:ajax listener="#{facturasController.consultaFacturaEdit(facturasVar)}" update=":search:panelPestanas:panelexterfactura,:search:panelPestanas:panelexterordenCompra"/>
+                        </p:commandLink>
+                    </p:column>
+
+                    <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold"  >
+                        <p:commandLink action="#{facturasController.eliminarFactura(facturasVar)}" update=":search:panelPestanas:panelFacturas" process="@form" immediate="true" onclick="if (!confirm('Esta seguro que desea eliminar este registro?'))
+                                    return false;">
+                            <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+
+                <p:spacer height="30"/>
+                <p:column>
+                    <p:commandLink value="Añadir factura" actionListener="#{facturasController.consultaFactura}" update=":search:panelPestanas:panelexterfactura,panelexterordenCompra" immediate="true"/>
+                </p:column>
+                <p:spacer height="30"/>
+
+                <p:outputPanel id="panelexterfactura">
+                    <p:panel id="panelFormfactura" header="Información" rendered="#{facturasController.flagFacturas}">
+                        <p:panelGrid columns="4">
+
+                            <p:outputLabel value="Número de la factura" for="facNumero"/>
+                            <p:inputText id="facNumero" value="#{facturasController.stFacturaCurrent.facNumero}" required="true" requiredMessage="El número de la factura es obligatorio."/>
+
+                            <p:outputLabel value="Fecha de la factura" for="facFecha"/>
+                            <p:calendar id="facFecha" value="#{facturasController.stFacturaCurrent.facFecha}" size="12" pattern="dd/MM/yyyy" readonlyInput="true" required="true" requiredMessage="La fecha de la factura es obligatorio."/>
+
+                            <p:outputLabel value="Moneda" for="monedaFactura"/>
+                            <p:selectOneMenu id="monedaFactura" value="#{facturasController.monedaFactura}" required="true" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" requiredMessage="La moneda es obligatoria.">
+                                <f:selectItems value="#{consultaCargaController.itemsStMoneda}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Valor de la factura" for="valFactura"/>
+                            <p:inputText id="valFactura" value="#{facturasController.stFacturaCurrent.valFactura}" required="true" requiredMessage="El valor de la factura es obligatorio."/>
+
+                            <p:outputLabel value="Proveedor" for="provFactura"/>
+                            <p:selectOneMenu id="provFactura" value="#{facturasController.provFactura}" style="width: 250px" required="true" filter="true" filterMatchMode="contains"  effect="fade" requiredMessage="El proveedor es obligatorio.">
+                                <f:selectItems value="#{consultaCargaController.proveeProducto}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Incoterm" for="inconFactura"/>
+                            <p:selectOneMenu value="#{facturasController.inconFactura}" id="inconFactura" required="true" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" requiredMessage="El incoterm es obligatorio.">
+                                <f:selectItems value="#{consultaCargaController.incoterms}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Orden de Compra" for="ordenCompraFactura"/>
+                            <p:selectOneMenu id="ordenCompraFactura" value="#{facturasController.ordenCompraFactura}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                                <f:selectItems value="#{consultaCargaController.ordenesCompra}"/>
+                            </p:selectOneMenu>
+                        </p:panelGrid>
+                        <p:spacer/>
+                        <div align="center">
+                            <p:outputPanel>
+                                <p:commandButton value="Guardar" action="#{facturasController.updateFactura}" update="facturasdatatable,panelexterfactura" process="@form"/>  
+                                <p:commandButton value="Cancelar" actionListener="#{facturasController.cancelarFactura}" update="panelexterfactura" immediate="true"/>  
+                            </p:outputPanel>
+                        </div>
+                    </p:panel>
+                </p:outputPanel>
+            </p:panel>
+        </div>
+    </p:panel>
+        </p:outputPanel>
+</ui:composition>
+

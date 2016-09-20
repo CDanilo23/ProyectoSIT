@@ -1,0 +1,265 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <script type="text/javascript">
+        function clearDateEstAerea() {
+            detFecsalestAerea.setDate(null);
+        }
+        function clearDateRealAerea() {
+            detFecrsalrealAerea.setDate(null);
+        }
+        function clearDateRealLlegadaAerea() {
+            detFecllegrealAerea.setDate(null);
+        }
+    </script>
+    <p:outputPanel id="panelcargaAereaOutput">
+        <p:panel id="panelcarAerea" header="Carga Internacional Aerea" style="width: 100%" toggleable="true" rendered="#{transporteController.flagPanelCargAerea}" >
+
+            <p:dataTable id="dataTablecarAerea" value="#{transporteController.stDetcargsAereas}" var="carAereaVar" emptyMessage="No se encontraron cargas Aéreas a la carga" styleClass="tablaRes">
+                <p:column headerText="Proveedor Aereo">
+                    <h:outputText value="#{carAereaVar.cliTpcconsec.proConsec.proNombre}"/>
+                </p:column>
+                <p:column headerText="Ruta">
+                    <h:outputText value="#{carAereaVar.rutRpconsec.rutConsec.rutNombre}"/>
+                </p:column>
+                <p:column headerText="Puerto Origen">
+                    <h:outputText value="#{carAereaVar.rutRpconsec.rutConsec.pueOrigen.pueNombre}"/>
+                </p:column>
+                <p:column headerText="Puerto Destino">
+                    <h:outputText value="#{carAereaVar.rutRpconsec.rutConsec.pueDestino.pueNombre}"/>
+                </p:column>
+                <p:column headerText="Número de bultos">
+                    <h:outputText value="#{carAereaVar.detBultos}"/>
+                </p:column>
+                <p:column style="font-size:11px; font-weight: bold">
+                    <p:commandLink value="Ver Traza"  actionListener="#{transporteController.consultaTraza(carAereaVar)}" onclick="PF('DialogTrazasVar').show()" update=":search:panelPestanas:panelTrazas" immediate="true"/>
+                </p:column>
+                <p:column headerText="Editar" style="font-size:11px; font-weight: bold">
+                    <p:commandLink >
+                        <p:graphicImage id="imgEdit" value="/resources/img/editar.png"/>
+                        <p:ajax listener="#{transporteController.consultaCargAereaEdit(carAereaVar)}" update=":search:panelPestanas:panelextercarAerea,:search:panelPestanas:panelcargaDestinoOutput"/>
+                    </p:commandLink>
+                </p:column>
+            </p:dataTable>
+
+            <p:spacer height="30"/>
+            <p:column>
+                <p:commandLink value="Añadir Carga Aerea" actionListener="#{transporteController.consultaCargAerea}" update=":search:panelPestanas:panelextercarAerea,:search:panelPestanas:panelcargaDestinoOutput" immediate="true" rendered="#{transporteController.anadCargAerea}"/>
+            </p:column>
+            <p:spacer height="30"/>
+
+            <p:outputPanel id="panelextercarAerea">
+                <p:panel id="panelFormcarAerea" header="Información" rendered="#{transporteController.flagCargAerea}">
+                    <p:panelGrid>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Fecha de salida est." for="detFecsalestAerea"/>
+                            </p:column>
+                            <p:column>
+                                <p:calendar id="detFecsalestAerea" value="#{transporteController.stDetcargAereaCurrent.detFecsalest}" size="12" pattern="dd/MM/yyyy" disabled="#{transporteController.flagbtnfecestsalAerea}" widgetVar="detFecsalestAerea" readonlyInput="true">
+                                    <p:ajax event="dateSelect"  listener="#{transporteController.cambiarFechaestimadaAerea}" update="@form"/>
+                                </p:calendar>
+                                <p:spacer width="10" />
+                                <p:commandLink actionListener="#{transporteController.limpiaFechaestimadaAerea}" update="detFecllegestAerea" immediate="true" onclick="javascript:clearDateEstAerea();" rendered="#{!transporteController.flagbtnfecestsalAerea}">
+                                    <p:graphicImage id="growca1" value="/resources/img/escobita.png">
+                                        <p:tooltip for="growca1" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                    </p:graphicImage>
+                                </p:commandLink>
+                                <p:commandButton id="BtndetFecsalestaerea" icon="ui-icon-plus" update=":search:panelPestanas:panelFecEstimada" rendered="#{transporteController.flagbtnfecestsalAerea}" actionListener="#{transporteController.edicionFechaEstSalida(carAereaVar)}"/>  
+                                <p:tooltip for="BtndetFecsalestaerea" value="Editar Fecha de salida estimada" />
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Fecha de salida real" for="detFecrsalrealAerea"/>
+                            </p:column>
+
+                            <p:column>
+                                <p:calendar id="detFecrsalrealAerea" value="#{transporteController.stDetcargAereaCurrent.detFecrsalreal}" size="12" pattern="dd/MM/yyyy" disabled="#{transporteController.flagbtnfecrealsalAerea}" widgetVar="detFecrsalrealAerea" readonlyInput="true">
+                                    <p:ajax event="dateSelect"  listener="#{transporteController.cambiarFechaRealAerea}" update="detFecllegestAerea"/>
+                                </p:calendar>
+                                <p:spacer width="10" />
+                                <p:commandLink actionListener="#{transporteController.limpiaFechaRealAerea}" update="detFecllegestAerea" immediate="true" onclick="javascript:clearDateRealAerea();" rendered="#{!transporteController.flagbtnfecrealsalAerea}">
+                                    <p:graphicImage id="growca2" value="/resources/img/escobita.png">
+                                        <p:tooltip for="growca2" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                    </p:graphicImage>
+                                </p:commandLink>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Fecha de llegada estimada" for="detFecllegestAerea"/>
+                            </p:column>
+
+                            <p:column>    
+                                <p:calendar id="detFecllegestAerea" value="#{transporteController.stDetcargAereaCurrent.detFecllegest}" size="12" pattern="dd/MM/yyyy" readonlyInput="true" disabled="#{transporteController.flagbtnfecestllegAerea}" readonly="true"/>
+                                <p:commandButton id="BtndetFecllegestaerea" icon="ui-icon-plus" onclick="PF('DialogFecEstimadaVar').show()" update=":search:panelPestanas:panelFecEstimada" rendered="#{transporteController.flagbtnfecestllegAerea and transporteController.stDetcargAereaCurrent.detConsec != null}" actionListener="#{transporteController.edicionFechaEstLlegada(carAereaVar)}"/>   
+                                <p:tooltip for="BtndetFecllegestaerea" value="Editar Fecha de llegada estimada" />
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Fecha de llegada real" for="detFecllegrealAerea"/>
+                            </p:column>
+
+                            <p:column>
+                                <p:calendar id="detFecllegrealAerea" value="#{transporteController.stDetcargAereaCurrent.detFecllegreal}" size="12" pattern="dd/MM/yyyy" readonlyInput="true" disabled="#{transporteController.flagbtnfecrealllegAerea}" widgetVar="detFecllegrealAerea"/>
+                                <p:spacer width="10" />
+                                <p:commandLink update="detFecllegestAerea" immediate="true" onclick="javascript:clearDateRealLlegadaAerea();" rendered="#{!transporteController.flagbtnfecrealllegAerea}">
+                                    <p:graphicImage id="growca3" value="/resources/img/escobita.png">
+                                        <p:tooltip for="growca3" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                    </p:graphicImage>
+                                </p:commandLink>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Proveedor" for="proveedorAerea"/>
+                            </p:column>
+                            <p:column>
+                                <p:selectOneMenu id="proveedorAerea" value="#{transporteController.proveedorAerea}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" valueChangeListener="#{transporteController.cambiarProveedorAereo}" required="true" requiredMessage="El proveedor aereo es obligatorio">
+                                    <f:selectItems value="#{transporteController.proveedoresAereos}"/>
+                                    <p:ajax update="rutaAerea,tie_transporteAerea,tipDiaAerea,rutaXprovvedorAereaNombre,detFecllegestAerea"/>
+                                </p:selectOneMenu>    
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Escoja la Ruta" for="rutaAerea"/>
+                            </p:column>
+
+                            <p:column colspan="3"> 
+                                <p:autoComplete id="rutaAerea" panelStyle="overflow : scroll; width : 500px;" dropdown="true" value="#{transporteController.rutaAerea}" emptyMessage="No existen rutas con estos criterios de consulta"
+                                                completeMethod="#{transporteController.getRutasXProveedorAereo}" scrollHeight="400"
+                                                var="p" itemLabel="#{p.rutConsec.rutNombre}" itemValue="#{p}" converter="stRutProvCargaAereaConverter"  
+                                                forceSelection="true" size="25" valueChangeListener="#{transporteController.cambioRutaAereahandleSelect}">
+                                    <p:ajax event="itemSelect" update="tie_transporteAerea,tipDiaAerea,rutaXprovvedorAereaNombre,detFecllegestAerea"/>
+                                    <p:column headerText="Ruta">
+                                        #{p.rutConsec.rutNombre}
+                                    </p:column>
+                                    <p:column headerText="Puerto Origen">
+                                        #{p.rutConsec.pueOrigen.pueNombre}
+                                    </p:column>
+                                    <p:column headerText="País Origen">
+                                        #{p.rutConsec.pueOrigen.stCiudad.stDpto.stPais.paiNom}
+                                    </p:column>
+                                    <p:column headerText="Puerto Destino">
+                                        #{p.rutConsec.pueDestino.pueNombre}
+                                    </p:column>
+                                    <p:column headerText="País Destino">
+                                        #{p.rutConsec.pueDestino.stCiudad.stDpto.stPais.paiNom}
+                                    </p:column>
+                                    <p:column headerText="Ubicación puerto Destino">
+                                        #{p.rutConsec.pueDestino.ubiConsec.ubiNombre}
+                                    </p:column>
+                                    <p:column headerText="Tipo de Dia">
+                                        #{p.tipDiaNombre}
+                                    </p:column>
+                                    <p:column headerText="Tiempo de transporte (Días)">
+                                        #{p.tieTransporte}
+                                    </p:column>
+                                </p:autoComplete>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Ruta Escogida" for="rutaXprovvedorAereaNombre"/>
+                            </p:column>
+                            <p:column colspan="3">
+                                <p:inputText id="rutaXprovvedorAereaNombre" value="#{transporteController.rutaXprovvedorAereaNombre}" disabled="true" required="true" requiredMessage="La ruta es obligatoria." size="100"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Tiempo Transporte (Días)" for="tie_transporteAerea"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="tie_transporteAerea" value="#{transporteController.stDetcargAereaCurrent.tie_transporte}" disabled="true"/>
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Tipo de Día" for="tipDiaAerea"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="tipDiaAerea" value="#{transporteController.stDetcargAereaCurrent.tipDia.tipNombre}" disabled="true"/>
+                            </p:column>
+                        </p:row>
+
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Factura Carga" for="detFacnumAerea"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="detFacnumAerea" value="#{transporteController.stDetcargAereaCurrent.detFacnum}"/>
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Valor Carga Internacional" for="detFacvalAerea"/>
+                            </p:column>
+                            <p:column>
+                                <p:inputText id="detFacvalAerea" value="#{transporteController.stDetcargAereaCurrent.detFacval}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Número de bultos" for="detBultosAerea"/>                                            
+                            </p:column>
+
+                            <p:column>
+                                <p:inputText id="detBultosAerea" value="#{transporteController.stDetcargAereaCurrent.detBultos}" required="true" requiredMessage="El número de bultos es obligatorio."/>
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Identificación del transporte" for="detDesmedAerea"/>        
+                            </p:column>
+
+                            <p:column>
+                                <p:inputText id="detDesmedAerea" value="#{transporteController.stDetcargAereaCurrent.detDesmed}"/>
+                            </p:column>
+                        </p:row>    
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Peso Bruto (Kg)" for="detPesbrutoAerea"/>                                            
+                            </p:column>
+
+                            <p:column>
+                                <p:inputText id="detPesbrutoAerea" value="#{transporteController.stDetcargAereaCurrent.detPesbruto}" required="true" requiredMessage="El peso bruto es obligatorio."/>
+                            </p:column>
+
+                            <p:column>
+                                <p:outputLabel value="Peso neto (Kg)" for="detPesneto"/>        
+                            </p:column>
+
+                            <p:column>
+                                <p:inputText id="detPesneto" value="#{transporteController.stDetcargAereaCurrent.detPesneto}"/>
+                            </p:column>
+                        </p:row>
+                        <p:row>
+                            <p:column>
+                                <p:outputLabel value="Volumen (m3)" for="detVolumen"/>                                            
+                            </p:column>
+
+                            <p:column>
+                                <p:inputText id="detVolumen" value="#{transporteController.stDetcargAereaCurrent.detVolumen}"/>
+                            </p:column>
+                        </p:row>
+                    </p:panelGrid>
+                    <p:spacer/>
+                    <div align="center">
+                        <p:outputPanel>
+                            <p:commandButton value="Guardar" action="#{transporteController.updateCargaAerea}" update="paneltotalcarAerea,panelCreacion" process="@form"/>  
+                            <p:commandButton value="Cancelar" actionListener="#{transporteController.cancelarCargaAerea}" update="panelcargaAereaOutput" immediate="true"/>  
+                            <p:commandButton value="Inactivar" actionListener="#{transporteController.inactivarCargAerea}" update="panelcargaAereaOutput" immediate="true" rendered="#{transporteController.stDetcargAereaCurrent.carConsec != null}" onclick="if (!confirm('Esta seguro que desea inactivar la carga?'))
+                                        return false;"/>  
+                        </p:outputPanel>
+                    </div>
+                </p:panel>
+            </p:outputPanel>
+        </p:panel>
+    </p:outputPanel>
+</ui:composition>
+

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="reporteCrossdocking" language="groovy" pageWidth="840" pageHeight="595" orientation="Landscape" columnWidth="800" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b0440d69-0b8d-4fc9-be74-b7feb5286073">
+	<property name="ireport.zoom" value="1.210000000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="pFechaInicial" class="java.util.Date"/>
+	<parameter name="pFechaFinal" class="java.util.Date"/>
+	<parameter name="pLogo" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="consecutivo" class="java.lang.Long">
+		<fieldDescription><![CDATA[consecutivo]]></fieldDescription>
+	</field>
+	<field name="conseccliente" class="java.lang.Long">
+		<fieldDescription><![CDATA[conseccliente]]></fieldDescription>
+	</field>
+	<field name="cliente" class="java.lang.String">
+		<fieldDescription><![CDATA[cliente]]></fieldDescription>
+	</field>
+	<field name="fechaOperacion" class="java.util.Date">
+		<fieldDescription><![CDATA[fechaOperacion]]></fieldDescription>
+	</field>
+	<field name="docTransporte" class="java.lang.String">
+		<fieldDescription><![CDATA[docTransporte]]></fieldDescription>
+	</field>
+	<field name="noContenedor" class="java.lang.String">
+		<fieldDescription><![CDATA[noContenedor]]></fieldDescription>
+	</field>
+	<field name="fechaArriboreal" class="java.util.Date">
+		<fieldDescription><![CDATA[fechaArriboreal]]></fieldDescription>
+	</field>
+	<field name="fechaLevantereal" class="java.util.Date">
+		<fieldDescription><![CDATA[fechaLevantereal]]></fieldDescription>
+	</field>
+	<field name="tipoOperacion" class="java.lang.String">
+		<fieldDescription><![CDATA[tipoOperacion]]></fieldDescription>
+	</field>
+	<field name="facturaOtm" class="java.lang.String">
+		<fieldDescription><![CDATA[facturaOtm]]></fieldDescription>
+	</field>
+	<field name="fechaOnhandreal" class="java.util.Date">
+		<fieldDescription><![CDATA[fechaOnhandreal]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="111" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Transparent" x="200" y="10" width="500" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="7e393cbb-4531-457a-8068-76997754c1ae"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[REPORTE ED - Crossdocking]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="200" y="30" width="200" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="a7f35194-acb1-4acc-b494-d0b52d5f3c77"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[FECHAS DE GENERACIÓN: INICIAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="500" y="30" width="100" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="09af5b69-d51d-4db3-bf6e-16e49498955c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[- FINAL -]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="400" y="30" width="100" height="20" uuid="c72a4912-b813-43de-9a83-fc0937e74c37"/>
+				<textFieldExpression><![CDATA[$P{pFechaInicial}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="600" y="30" width="100" height="20" uuid="e4f0430d-3428-4de0-8604-3f698692f069"/>
+				<textFieldExpression><![CDATA[$P{pFechaFinal}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="0" width="200" height="77" uuid="25f14764-3ab9-455a-8e7e-e5ee78657416"/>
+				<imageExpression><![CDATA[$P{pLogo}]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="40" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="20" width="100" height="20" forecolor="#FFFFFF" backcolor="#1F497D" uuid="4ab8db39-08b7-4a4d-8ea1-88e313074291"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[consecutivo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="200" y="20" width="100" height="20" forecolor="#FFFFFF" backcolor="#1F497D" uuid="15a074f4-a28f-4f6e-bb23-572499226bfa"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[noContenedor]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="400" y="20" width="100" height="20" forecolor="#FFFFFF" backcolor="#1F497D" uuid="13f49902-4d88-45a2-aa7e-1cc98f7d17ed"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[fechaArriboreal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="500" y="20" width="100" height="20" forecolor="#FFFFFF" backcolor="#1F497D" uuid="25b9a195-a157-457f-ac0f-2c27127e8eec"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[fechaLevantereal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="300" y="20" width="100" height="20" forecolor="#FFFFFF" backcolor="#1F497D" uuid="54017f84-f8b8-49f9-8388-b91530885950"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[tipoOperacion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="600" y="20" width="100" height="20" forecolor="#FFFFFF" backcolor="#1F497D" uuid="436dd850-34bb-46ad-83cc-cb56b4de6f15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[facturaOtm]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="700" y="20" width="100" height="20" forecolor="#FFFFFF" backcolor="#1F497D" uuid="f4ff808b-31ea-4dc4-a460-ed1d1163ecfb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[fechaOnhandreal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="100" y="20" width="100" height="20" forecolor="#FFFFFF" backcolor="#1F497D" uuid="9376c5ee-a355-4660-867d-b9f45ec47676"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[docTransporte]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="911f6eb5-4103-48a0-93b4-1aeea4dc0024"/>
+				<textFieldExpression><![CDATA[$F{consecutivo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="100" height="20" uuid="32914d18-4a1c-457b-b202-c443de67b68c"/>
+				<textFieldExpression><![CDATA[$F{docTransporte}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="200" y="0" width="100" height="20" uuid="2581515f-9947-44af-bae5-ae6d23fe69a3"/>
+				<textFieldExpression><![CDATA[$F{noContenedor}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="400" y="0" width="100" height="20" uuid="594d08f7-6810-40cf-b334-1e098cd14ff9"/>
+				<textFieldExpression><![CDATA[$F{fechaArriboreal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="500" y="0" width="100" height="20" uuid="7c9944e6-ac12-4ab1-813a-6fb6b4bfb68d"/>
+				<textFieldExpression><![CDATA[$F{fechaLevantereal}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="300" y="0" width="100" height="20" uuid="9e88a2d1-5f32-40ef-a9b3-6926bfad584c"/>
+				<textFieldExpression><![CDATA[$F{tipoOperacion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="600" y="0" width="100" height="20" uuid="be0e643c-9bf9-481f-984d-234fd34d0235"/>
+				<textFieldExpression><![CDATA[$F{facturaOtm}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="700" y="0" width="100" height="20" uuid="279a5311-badf-4142-a3f9-2396e82ba753"/>
+				<textFieldExpression><![CDATA[$F{fechaOnhandreal}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

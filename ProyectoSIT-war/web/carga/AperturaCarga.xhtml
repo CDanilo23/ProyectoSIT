@@ -1,0 +1,109 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="../templates/templateContenido.xhtml">
+    <ui:define name="contenido">
+        <f:view>
+            <f:event type="preRenderComponent" listener="#{aperturacargacontroller.init()}"/>
+        </f:view>
+        <h:form id="search" onkeypress="if (event.keyCode === 13) {
+                    return false;
+                }">
+
+            <h1>Apertura de Carga</h1>
+            <p:panel header="Consultar cliente" toggleable="true">  
+                <div align="center">
+                    <p:panelGrid columns="3">  
+                        <p:outputLabel value="Cliente:"/>
+                        <p:autoComplete id="stClienteComplete" minQueryLength="3" scrollHeight="150"  size="75" 
+                                        value="#{aperturacargacontroller.clienteSeleccionado}" emptyMessage="No existen clientes con estos criterios de consulta"
+                                        completeMethod="#{aperturacargacontroller.findAllTerceroDescription}"
+                                        var="p" itemLabel="#{p.cliNombre}" itemValue="#{p}" converter="stClienteCargaConverter"  
+                                        forceSelection="true">
+                            <p:column headerText="Nro Identificacion">
+                                #{p.cliNit}
+                            </p:column>
+                            <p:column headerText="Nombre">
+                                #{p.cliNombre}
+                            </p:column>
+                            <p:ajax event="itemSelect" update="paneltabprincipal" listener="#{aperturacargacontroller.crearCarga}"  onstart="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide()" />
+                        </p:autoComplete>
+                        <p:graphicImage id="grow" value="/resources/img/helpIcon.png" />
+                        <p:tooltip for="grow" value="Digite 3 letras que contengan el nombre del cliente o el numero de nit completo" showEffect="clip" hideEffect="explode" />  
+                    </p:panelGrid> 
+                </div>
+            </p:panel>
+            <p:spacer/>
+
+            <p:outputPanel id="paneltabprincipal">
+                <p:panel id="panelCreacion" header="Informacion Carga General" style="text-align: left"  rendered="#{aperturacargacontroller.flagTabView}">
+                    <p:panelGrid columns="4">
+
+                        <p:outputLabel value="Fecha de la operación" for="carFecope"/>
+                        <p:calendar id="carFecope" value="#{aperturacargacontroller.stCargaCurrent.carFecope}" size="12" pattern="dd/MM/yyyy" readonlyInput="true" required="true" requiredMessage="La fecha de operación es obligatoria."/>
+
+
+                        <p:outputLabel value="Tipo de operación" for="tipOperacion"/>
+                        <p:selectOneMenu id="tipOperacion" value="#{aperturacargacontroller.tipOperacion}" required="true" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" requiredMessage="El tipo de operación es obligatorio." valueChangeListener="#{aperturacargacontroller.cambiarTipoOperacion}">
+                            <f:selectItems value="#{aperturacargacontroller.itemsStTipoper}"/>
+                            <p:ajax update="modTransporte"/>
+                        </p:selectOneMenu>
+
+                        <p:column>
+                            <p:outputLabel value="Modo de transporte" for="modTransporte"/>
+                            <p:graphicImage id="mt" value="/resources/img/helpIcon.png" />
+                            <p:tooltip for="mt" value="Para seleccionar el modo de transporte debe escoger el tipo de operación" showEffect="clip" hideEffect="explode"/>
+                        </p:column>
+                        <p:selectOneMenu value="#{aperturacargacontroller.modTransporte}" id="modTransporte" required="true" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" requiredMessage="El modo de transporte es obligatorio.">
+                            <f:selectItems value="#{aperturacargacontroller.itemsStModTran}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Proveedor de aduana" for="proAduana"/>
+                        <p:selectOneMenu id="proAduana" value="#{aperturacargacontroller.proAduana}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                            <f:selectItems value="#{aperturacargacontroller.proveeAduana}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Deposito Destino" for="depCliente"/>
+                        <p:selectOneMenu value="#{aperturacargacontroller.depCliente}" id="depCliente" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                            <f:selectItems value="#{aperturacargacontroller.depositosCliente}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Tipo de embarque" for="tipEmbarqueCarga"/>
+                        <p:selectOneMenu value="#{aperturacargacontroller.tipEmbarqueCarga}" id="tipEmbarqueCarga" required="true" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" requiredMessage="El tipo de embarque es obligatorio.">
+                            <f:selectItems value="#{aperturacargacontroller.tiposEmbarque}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel value="Número de Do Externo" for="carDo"/>
+                        <p:inputText id="carDo" value="#{aperturacargacontroller.stCargaCurrent.carDo}"/>
+
+                        <p:outputLabel value="Número de Do Almaviva" for="carDoalma"/>
+                        <p:inputText id="carDoalma" value="#{aperturacargacontroller.stCargaCurrent.carDoalma}"/>
+
+                        <p:outputLabel value="Número de Documento transporte" for="carNumdoctra"/>
+                        <p:inputText id="carNumdoctra" value="#{aperturacargacontroller.stCargaCurrent.carNumdoctra}"/>
+
+                        <p:outputLabel value="Fecha de documento Transporte" for="carFecdoctra"/>
+                        <p:calendar id="carFecdoctra" value="#{aperturacargacontroller.stCargaCurrent.carFecdoctra}" size="12" pattern="dd/MM/yyyy" readonlyInput="true"/>
+                    </p:panelGrid>
+                    <p:spacer/>
+                    <div align="center">
+                        <p:outputPanel>
+                            <p:commandButton value="Crear Carga" action="#{aperturacargacontroller.createCarga}" update="panelCreacion" process="@form"/>  
+                        </p:outputPanel>
+                    </div>
+                </p:panel>
+            </p:outputPanel>
+        </h:form>
+        <p:dialog showHeader="false" widgetVar="dlgLoading" resizable="false" modal="true" closable="false">
+            <p:panel>
+                <p:graphicImage value="/resources/img/loading.gif"/>
+            </p:panel>
+        </p:dialog>
+
+
+    </ui:define>
+</ui:composition>
+
+

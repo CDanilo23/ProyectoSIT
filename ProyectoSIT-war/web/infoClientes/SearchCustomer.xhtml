@@ -1,0 +1,810 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="../templates/templateContenido.xhtml">
+    <ui:define name="contenido">
+
+        <h:form id="search" onkeypress="if (event.keyCode === 13) {
+                    return false;
+                }">
+            <h1>Administración de Clientes- Información</h1>
+
+            <p:panel header="Consultar cliente" style="text-align: left">  
+                <div align="center">
+                    <p:panelGrid columns="3">  
+                        <p:outputLabel value="#{bundleGeneral.ViewCeTerceroLabel_terNom} "/>
+                        <p:autoComplete id="stCliente" minQueryLength="3" scrollHeight="150"  size="75" 
+                                        value="#{stClienteController.clienteSeleccionado}" emptyMessage="No existen clientes con estos criterios de consulta"
+                                        completeMethod="#{stClienteController.findAllClienteDescription}"
+                                        var="p" itemLabel="#{p.cliNombre}" itemValue="#{p}" converter="stClienteConverter"  
+                                        forceSelection="true" valueChangeListener="#{stClienteController.handleSelect}">
+                            <p:column headerText="Nro Identificacion">
+                                #{p.cliNit}
+                            </p:column>
+                            <p:column headerText="Nombre">
+                                #{p.cliNombre}
+                            </p:column>
+                            <p:ajax event="itemSelect" update="panelPrueba,panelPestanas" listener="#{stClienteController.probando}"  onstart="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide()"/>
+                        </p:autoComplete>
+                        <p:graphicImage id="grow" value="/resources/img/helpIcon.png" />
+                        <p:tooltip for="grow" value="Digite 3 letras que contengan el nombre del cliente o el numero de nit completo" showEffect="clip" hideEffect="explode" />  
+                    </p:panelGrid> 
+                </div>
+            </p:panel>
+
+
+            <p:outputPanel id="panelPrueba">
+                <p:tabView  id="panelPestanas" rendered="#{stClienteController.flagPrepareEdit}" >
+                    <p:ajax event="tabChange" process="@form" update="panelPestanas" listener="#{stClienteController.cambioTab}" onstart="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide()"/>
+                    <p:spacer height="5"/>
+                    <p:messages id="messages" autoUpdate="true" closable="true" /> 
+                    <p:spacer height="5"/>
+                    <p:tab id="tab1" title="Informacion General">  
+
+                        <p:panel header="Informacion Cliente" style="text-align: left" id="paneltabprincipal"  >
+                            <div align="center">
+                                <p:panel id="panelPo" >
+                                    <p:panelGrid columns="4" style="width: 100%" id="panelTab1" > 
+
+                                        <p:outputLabel value="Nit"/>
+                                        <p:inputText value="#{stClienteController.clienteSeleccionado.cliNit}" size="30"  readonly="true"/>
+
+                                        <p:outputLabel value="Nombre"/>
+                                        <p:inputText value="#{stClienteController.clienteSeleccionado.cliNombre}"  readonly="true"/>
+
+                                        <p:outputLabel value="Dígito de Verificación"/>
+                                        <p:inputText value="#{stClienteController.clienteSeleccionado.cliDigver}" size="1"  readonly="true"/>
+
+                                        <p:outputLabel value="Dirección"/>
+                                        <p:inputText value="#{stClienteController.clienteSeleccionado.cliDirecc}" size="30"     readonly="true" />
+
+                                        <p:outputLabel value="Telefono"/>
+                                        <p:inputText value="#{stClienteController.clienteSeleccionado.cliTelefo}" size="30"  readonly="true"/>
+
+                                        <p:outputLabel value="Nombre comercial"/>
+                                        <p:inputText value="#{stClienteController.clienteSeleccionado.cliNomcom}" size="30"  readonly="true"/>
+
+                                        <p:outputLabel value="Ciudad"/>
+                                        <p:inputText value="#{stClienteController.clienteSeleccionado.stCiudad.ciuNom}" size="30"  readonly="true"/>
+                                    </p:panelGrid>
+                                </p:panel>
+                            </div>
+                            <p:spacer height="25" />
+
+                        </p:panel>
+
+                    </p:tab>
+
+                    <p:tab id="tab2" title="Proveedores"> 
+
+                        <p:panel header="Informacion Proveedores Logisticos" style="text-align: left" id="panelProveedoresLogisticos" toggleable="true">
+                            <div align="center">
+                                <p:outputPanel id="panelContenedorMedio">
+                                    <p:panel id="panelPo2" >
+                                        <p:panelGrid columns="4" id="TablaProveedoresProducto" >
+
+                                            <p:dataTable value="#{stClienteController.listaProveedoresLogisticos}" id="datatableProveedoresLogisticos" var="Proveedor" rendered="#{stClienteController.flagPrepareEdit}" 
+                                                         paginator="true" 
+                                                         rows="5" 
+                                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         emptyMessage="No se encontraron proveedores"
+                                                         rowsPerPageTemplate="5,10,15" 
+                                                         styleClass="tablaRes">
+                                                <f:facet name="header">  
+                                                    Lista proveedores
+                                                </f:facet>  
+
+                                                <p:column headerText="Nombre Proveedor" sortBy="#{Proveedor.proConsec.proNombre}" filterBy="#{Proveedor.proConsec.proNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{Proveedor.proConsec.proNombre}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Servicio" sortBy="#{Proveedor.tipServic.tipNombre}" filterBy="#{Proveedor.tipServic.tipNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{Proveedor.tipServic.tipNombre}" />
+                                                </p:column>
+
+                                                <p:column headerText="Telefono Contacto" sortBy="#{Proveedor.proConsec.proTelefo}" filterBy="#{Proveedor.proConsec.proTelefo}" filterMatchMode="contains">
+                                                    <h:outputText value="#{Proveedor.proConsec.proTelefo}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Direccion" sortBy="#{Proveedor.proConsec.proDirecc}" filterBy="#{Proveedor.proConsec.proDirecc}" filterMatchMode="contains">
+                                                    <h:outputText value="#{Proveedor.proConsec.proDirecc}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Editar" style="font-size:11px; font-weight: bold"  >
+                                                    <!--Editar-->                             
+                                                    <p:commandLink >
+                                                        <p:ajax listener="#{stClienteController.editarProveedorLogistico(Proveedor)}" update="@form" immediate="true"/>
+                                                        <p:graphicImage id="imgEdit" value="/resources/img/editar.png"  />
+
+                                                    </p:commandLink>
+
+                                                </p:column>
+
+                                                <!--Eliminar-->                          
+                                                <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold"  >
+                                                    <p:commandLink action="#{stClienteController.eliminarProveedor(Proveedor)}" onclick="if (!confirm('Esta seguro que desea eliminar este registro?'))
+                                                                return false;" ajax="false" immediate="true" process="@form">
+                                                        <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                                                    </p:commandLink>
+                                                </p:column>
+
+                                            </p:dataTable>
+
+
+
+                                        </p:panelGrid>
+                                        <p:commandLink value="Añadir" action="#{stClienteController.activaFormularioAsociacionLog()}" immediate="true" style="width:70px; " ajax="false"/>
+                                        <!--Panel de edicion-->                       
+                                        <p:panel header="Informacion del proveedor : #{stClienteController.proveedCurrent.proConsec.proNombre}" rendered="#{stClienteController.activadorPanelAsociacionEdicionLog}" id="panelAsociacionEdicion"  style="text-align: left" toggleable="true" >
+                                            <p:panelGrid columns="4">
+
+                                                <p:outputLabel value="Proveedor" for="proveedorLogistico" rendered="#{stClienteController.activadorComponentesAsociarLog}" style="text-align: left"/>
+                                                <p:selectOneMenu value="#{stClienteController.lstProveed}" rendered="#{stClienteController.activadorComponentesAsociarLog}" id="proveedorLogistico" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                                                    <f:selectItems value="#{stClienteController.listaProveeLogisticos}"/>
+                                                </p:selectOneMenu>
+
+                                                <p:outputLabel value="Servicio" for="Servicio"/>
+                                                <p:selectOneMenu value="#{stClienteController.lstTipserv}" id="Servicio" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                                                    <f:selectItems value="#{stClienteController.listaServicios}"/>
+                                                </p:selectOneMenu>
+
+                                            </p:panelGrid>
+                                            <p:spacer/>
+                                            <div align="center">
+                                                <!--actualizar-->
+                                                <p:outputPanel rendered="#{stClienteController.activadorBotonActualizarLog}">
+                                                    <p:commandButton value="Actualizar Información" action="#{stClienteController.updateProveedorLog()}" process="@form" update=":search:panelPestanas:panelContenedorMedio" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide();"/>  
+                                                </p:outputPanel>
+
+                                                <p:outputPanel rendered="#{stClienteController.activadorComponentesAsociarLog}">
+                                                    <p:commandButton value="Asociar" action="#{stClienteController.asociarProveedorLogistico()}" process="@form" update="panelPestanas" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide(); "/>  
+                                                </p:outputPanel>
+                                            </div>
+                                        </p:panel>
+                                    </p:panel>
+                                </p:outputPanel>
+                            </div>
+                        </p:panel>
+
+                        <p:panel header="Informacion Proveedores de Producto" id="panelProveedoresProducto" toggleable="true">
+                            <div align="center">
+                                <p:panel id="panelPo3">
+                                    <p:panelGrid columns="4" style="width: 100%;">
+                                        <p:dataTable value="#{stClienteController.listaProveedoresProducto}" id="datatableProveedoresProductos" var="proveePro" paginator="true" 
+                                                     rows="5" 
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     emptyMessage="No se encontraron proveedores"
+                                                     rowsPerPageTemplate="5,10,15" 
+                                                     styleClass="tablaRes">
+                                            <f:facet name="header">  
+                                                Lista proveedores 
+                                            </f:facet>  
+
+                                            <p:column headerText="Proveedor" sortBy="segTerDet" filterBy="#{proveePro.proConsec.proNombre}" filterMatchMode="contains">
+                                                <h:outputText value="#{proveePro.proConsec.proNombre}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Tipo Producto" sortBy="segTerDet" filterBy="#{proveePro.tipProduc.tipNombre}" filterMatchMode="contains">
+                                                <h:outputText value="#{proveePro.tipProduc.tipNombre}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Ciudad" sortBy="segTerDet" filterBy="#{proveePro.proConsec.stCiudad.ciuNom}" filterMatchMode="contains">
+                                                <h:outputText value="#{proveePro.proConsec.stCiudad.ciuNom}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Editar" style="font-size:11px; font-weight: bold"  >
+                                                <!--Editar-->                             
+                                                <p:commandLink>
+                                                    <p:ajax listener="#{stClienteController.editarProveedorProducto(proveePro)}" update="@form" immediate="true"/>
+                                                    <p:graphicImage id="imgEdit" value="/resources/img/editar.png"  />
+
+                                                </p:commandLink>
+
+                                            </p:column>
+
+                                            <!--Eliminar-->                          
+                                            <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold"  >
+                                                <p:commandLink action="#{stClienteController.eliminarProveedor(proveePro)}" onclick="if (!confirm('Esta seguro que desea eliminar este registro?'))
+                                                            return false;" process="@form" update="datatableProveedoresProductos">
+                                                    <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                                                </p:commandLink>
+                                            </p:column>
+
+                                        </p:dataTable>
+                                    </p:panelGrid>
+                                    <p:commandLink value="Añadir" action="#{stClienteController.activaFormularioAsociacionProveePro}" immediate="true" style="width:70px; " ajax="false" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide();"/>
+                                    <!--Panel de edicion-->                       
+                                    <p:panel header="Informacion del proveedor : #{stClienteController.proveedCurrent.proConsec.proNombre}" id="panelAsociacionEdicionProveePro" 
+                                             rendered="#{stClienteController.activadorPanelAsociacionEdicionProveePro}"
+                                             style="text-align: left" toggleable="true">
+                                        <p:panelGrid columns="4">
+
+                                            <p:outputLabel value="Proveedor" for="proveedorPro" rendered="#{stClienteController.activadorComponentesAsociarProducto}" style="text-align: left"/>
+                                            <p:selectOneMenu value="#{stClienteController.lproveePro}"  id="proveedorPro" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade"
+                                                             rendered="#{stClienteController.activadorComponentesAsociarProducto}">
+                                                <f:selectItems value="#{stClienteController.listaProveeProducto}"/>
+                                            </p:selectOneMenu>
+
+                                            <p:outputLabel value="Tipo Producto" for="tipProducto"/>
+                                            <p:selectOneMenu value="#{stClienteController.lproducto}" id="tipProducto" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                                                <f:selectItems value="#{stClienteController.listaTipoProductos}"/>
+                                            </p:selectOneMenu>
+
+                                        </p:panelGrid>
+                                        <p:spacer/>
+                                        <div align="center">
+                                            <!--actualizar-->
+                                            <p:outputPanel rendered="#{stClienteController.activadorBotonActualizarProducto}">
+                                                <p:commandButton value="Actualizar Información" action="#{stClienteController.updateProveedorPro()}"  update="panelPestanas" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide(); "/>  
+                                            </p:outputPanel>
+
+                                            <p:outputPanel rendered="#{stClienteController.activadorComponentesAsociarProducto}">
+                                                <p:commandButton value="Asociar" action="#{stClienteController.asociarProveedorProducto()}" process="@form" update="panelPestanas, panelAsociacionEdicionProveePro, datatableProveedoresProductos" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide();"/>  
+                                            </p:outputPanel>
+                                        </div>
+                                    </p:panel>
+                                </p:panel>
+                            </div>
+                        </p:panel>
+
+
+
+                    </p:tab>
+                    <p:tab id="tab3" title="Productos">  
+
+                        <p:panel header="Informacion Productos " style="text-align: left" id="panelProductos" toggleable="true">
+                            <div align="center">
+                                <p:panel id="panelPo4" >
+                                    <p:panelGrid columns="4" id="TablaProductos" >
+
+                                        <p:dataTable value="#{stClienteController.listaProductosXcliente}" id="DtableProductos" var="producto" rendered="#{stClienteController.flagPrepareEdit}" 
+                                                     paginator="true" 
+                                                     rows="5" 
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     emptyMessage="No se encontraron proveedores"
+                                                     rowsPerPageTemplate="5,10,15" 
+                                                     styleClass="tablaRes">
+                                            <f:facet name="header">  
+                                                Lista Productos
+                                            </f:facet>  
+
+                                            <p:column headerText="Codigo" sortBy="#{producto.proCodigo}" filterBy="#{producto.proCodigo}" filterMatchMode="contains">
+                                                <h:outputText value="#{producto.proCodigo}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Descripcion" sortBy="#{producto.proDescri}" filterBy="#{producto.proDescri}" filterMatchMode="contains">
+                                                <h:outputText value="#{producto.proDescri}" />
+                                            </p:column>
+
+                                            <p:column headerText="Categoria" sortBy="#{producto.catConsec.catCodigo}" filterBy="#{producto.catConsec.catCodigo}" filterMatchMode="contains">
+                                                <h:outputText value="#{producto.catConsec.catCodigo}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Modelo" sortBy="#{producto.modConsec.modCodigo}" filterBy="#{producto.modConsec.modCodigo}" filterMatchMode="contains">
+                                                <h:outputText value="#{producto.modConsec.modCodigo}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Tipo producto" sortBy="#{producto.tipConsec.tipConsec}" filterBy="#{producto.tipConsec.tipConsec}" filterMatchMode="contains">
+                                                <h:outputText value="#{producto.tipConsec.tipNombre}"/>
+                                            </p:column>
+
+                                            <!--Editar-->
+                                            <p:column headerText="Editar" style="font-size:11px; font-weight: bold"  >
+
+                                                <p:commandLink>
+                                                    <p:ajax listener="#{stClienteController.editarProducto(producto)}" update="@form" immediate="true"/>
+                                                    <p:graphicImage id="imgEdit" value="/resources/img/editar.png"  />
+
+                                                </p:commandLink>
+
+                                            </p:column>
+
+                                            <!--Eliminar-->                          
+                                            <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold"  >
+                                                <p:commandLink action="#{stClienteController.eliminarProducto(producto)}" onclick="if (!confirm('Esta seguro que desea eliminar este registro?'))
+                                                            return false;" ajax="false" immediate="true" process="@form" update="DtableProductos">
+                                                    <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                                                </p:commandLink>
+                                            </p:column>
+
+                                        </p:dataTable>
+
+
+
+                                    </p:panelGrid>
+                                    <p:commandLink value="Añadir" action="#{stClienteController.crearProducto()}" immediate="true" style="width:70px; " ajax="false"/>
+                                    <!--Panel de edicion-->                       
+                                    <p:panel header="Informacion del producto" id="panelAsociacionEdicionProducto" toggleable="true"  
+                                             rendered="#{stClienteController.activadorPanelCreacionEdicionProducto}"
+                                             style="text-align: left" >
+                                        <p:panelGrid columns="4">
+
+                                            <p:outputLabel value="Codigo" for="codigoProducto"/>
+                                            <p:inputText id="codigoProducto" value="#{stClienteController.codProducto}" size="30"/>
+
+                                            <p:outputLabel value="Descripcion" for="descripcionProducto"/>
+                                            <p:inputText id="descripcionProducto" value="#{stClienteController.pdescripcion}" size="30"/>
+
+                                            <p:outputLabel value="Categoria" for="categoriaProducto" style="text-align: left"/>
+                                            <p:selectOneMenu id="categoriaProducto" value="#{stClienteController.lcatConsec}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                                                <f:selectItems value="#{stClienteController.listaCategoriasXCliente}"/>
+                                            </p:selectOneMenu>
+
+                                            <p:outputLabel value="Modelo" for="modeloProducto"/>
+                                            <p:selectOneMenu id="modeloProducto" value="#{stClienteController.lmodConsec}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                                                <f:selectItems value="#{stClienteController.listaModelosXCliente}"/>
+                                            </p:selectOneMenu>
+
+                                            <p:outputLabel value="Tipo de producto" for="tipoProducto"/>
+                                            <p:selectOneMenu id="tipoProducto" value="#{stClienteController.ltipprodConsec}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                                                <f:selectItems value="#{stClienteController.listaTipProXCliente}"/>
+                                            </p:selectOneMenu>
+
+                                        </p:panelGrid>
+                                        <p:spacer/>
+                                        <div align="center">
+                                            <p:outputPanel>
+                                                <p:commandButton value="Guardar" action="#{stClienteController.creacionEdicionProducto()}" process="@form" update="panelProductos" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide();"/>  
+                                            </p:outputPanel>
+                                        </div>
+                                    </p:panel>
+                                </p:panel>
+                            </div>
+                        </p:panel>
+
+                    </p:tab>
+
+                    <p:tab id="tab4" title="Tiempos">  
+
+                        <p:panel header="Informacion Tiempos " style="text-align: left" id="panelTiempos" toggleable="true">
+                            <div align="center">
+                                <p:panel id="panelPo5" >
+                                    <p:panelGrid columns="4" id="gridTiempos" >
+
+                                        <p:dataTable value="#{stClienteController.listaTiempos}" id="DTtiempos" var="tiempo" rendered="#{stClienteController.flagPrepareEdit}" 
+                                                     paginator="true" 
+                                                     rows="5" 
+                                                     paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                     emptyMessage="No se encontraron proveedores"
+                                                     rowsPerPageTemplate="5,10,15" 
+                                                     styleClass="tablaRes">
+                                            <f:facet name="header">  
+                                                Lista Tiempos
+                                            </f:facet>  
+
+                                            <p:column headerText="Servicio" sortBy="#{tiempo.cliTpcconsec.tipServic.tipNombre}" filterBy="#{tiempo.cliTpcconsec.tipServic.tipNombre}" filterMatchMode="contains">
+                                                <h:outputText value="#{tiempo.cliTpcconsec.tipServic.tipNombre}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Proveedor" sortBy="#{tiempo.cliTpcconsec.proConsec.proNombre}" filterBy="#{tiempo.cliTpcconsec.proConsec.proNombre}" filterMatchMode="contains">
+                                                <h:outputText value="#{tiempo.cliTpcconsec.proConsec.proNombre}" />
+                                            </p:column>
+
+                                            <p:column headerText="Codigo Ruta" sortBy="#{tiempo.rutRpconsec.rutConsec.rutCodigo}" filterBy="#{tiempo.rutRpconsec.rutConsec.rutCodigo}" filterMatchMode="contains">
+                                                <h:outputText value="#{tiempo.rutRpconsec.rutConsec.rutCodigo}"/>
+                                            </p:column>
+
+                                            <p:column headerText="Cod. Puerto Origen" sortBy="#{tiempo.rutRpconsec.rutConsec.pueOrigen.pueCodigo}" filterBy="#{tiempo.rutRpconsec.rutConsec.pueOrigen.pueCodigo}" filterMatchMode="contains">
+                                                <h:outputText value="#{tiempo.rutRpconsec.rutConsec.pueOrigen.pueCodigo}"/>
+                                            </p:column>
+
+
+                                            <p:column headerText="Tiempo Transporte (Cantidad dias)" sortBy="#{tiempo.tieTransporte}" filterBy="#{tiempo.tieTransporte}" filterMatchMode="contains">
+                                                <h:outputText value="#{tiempo.tieTransporte} #{tiempo.tipConsec.tipNombre}"/>
+                                            </p:column>
+                                            <!--Editar-->
+                                            <p:column headerText="Editar" style="font-size:11px; font-weight: bold"  >
+
+                                                <p:commandLink>
+                                                    <p:ajax listener="#{stClienteController.editarTiempo(tiempo)}" update="@form" immediate="true"/>
+                                                    <p:graphicImage id="imgEdit" value="/resources/img/editar.png"  />
+
+                                                </p:commandLink>
+
+                                            </p:column>
+
+                                            <!--Eliminar-->                          
+                                            <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold"  >
+                                                <p:commandLink action="#{stClienteController.eliminarTiempo(tiempo)}" onclick="if (!confirm('Esta seguro que desea eliminar este registro?'))
+                                                            return false;" ajax="false" immediate="true" process="@form" update="DtableProductos">
+                                                    <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                                                </p:commandLink>
+                                            </p:column>
+
+                                        </p:dataTable>
+
+
+
+                                    </p:panelGrid>
+                                    <p:commandLink value="Añadir">
+                                        <p:ajax listener="#{stClienteController.habilitarPanelcrearTiempo()}" update="@form" immediate="true"/>
+                                    </p:commandLink>
+                                    <!--Panel de edicion-->                       
+                                    <p:panel header="Informacion de tiempo #{stClienteController.stTiempos.cliTpcconsec.proConsec.proNombre}" id="panelEdicionCreacionTiempo" toggleable="true" style="text-align: left" rendered="#{stClienteController.activadorPanelEdicionCreacionTiempos}" >
+                                        <p:panelGrid columns="4">
+
+                                            <p:outputLabel value="Tipo Servicio" for="tipServ" rendered="#{stClienteController.activadorItemsCreacionTiempos}"/>
+                                            <p:selectOneMenu id="tipServ" value="#{stClienteController.ltipoServ}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade"
+                                                             rendered="#{stClienteController.activadorItemsCreacionTiempos}">
+                                                <f:selectItems value="#{stClienteController.listaTipoServicioExcepGeneral}"/>
+                                                <p:ajax update="ProveeLog"/>
+                                            </p:selectOneMenu>
+
+
+                                            <p:outputLabel value="Proveedor Logistico" for="ProveeLog" rendered="#{stClienteController.activadorItemsCreacionTiempos}"/>
+                                            <p:selectOneMenu id="ProveeLog" value="#{stClienteController.longProveelog}" valueChangeListener="#{stClienteController.cambiarProveedorLogRuta}" 
+                                                             style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" rendered="#{stClienteController.activadorItemsCreacionTiempos}">
+                                                <f:selectItems value="#{stClienteController.listaProveeLogisticosXcliente}"/>
+                                                <p:ajax update="rutas" />
+                                            </p:selectOneMenu>
+
+
+                                            <p:outputLabel value="Rutas: " for="rutas" rendered="#{stClienteController.activadorItemsCreacionTiempos}"/>
+                                            <p:autoComplete id="rutas" panelStyle="overflow: scroll; width: 400px;" dropdown="true" minQueryLength="3" completeMethod="#{stClienteController.getRutasByfilter}"
+                                                            value="#{stClienteController.stRutprov}" emptyMessage="No existen rutas con estos criterios de consulta" rendered="#{stClienteController.activadorItemsCreacionTiempos}"
+                                                            forceSelection="true" var="r" itemLabel="#{r.rutConsec.rutNombre}" itemValue="#{r}" converter="rutaConverter">
+
+                                                <p:column headerText="Codigo ruta" id="rutCod" style="width:10%" filterBy="#{r.rutConsec.rutCodigo}" filterMatchMode="contains">
+                                                    <h:outputText value="#{r.rutConsec.rutCodigo}" />
+                                                </p:column>
+
+                                                <p:column headerText="Nombre ruta" id="rutNom" style="width:10%" filterBy="#{r.rutConsec.rutNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{r.rutConsec.rutNombre}" />
+                                                </p:column>
+
+                                                <p:column headerText="Puerto origen" id="nomPuertoOrigen" style="width:10%" filterBy="#{r.rutConsec.pueOrigen.pueNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{r.rutConsec.pueOrigen.pueNombre}" />
+                                                </p:column>
+
+                                                <p:column headerText="Pais origen" id="nomPaisOrigen" style="width:10%" filterBy="#{r.rutConsec.pueOrigen.stCiudad.stDpto.stPais.paiNom}" filterMatchMode="contains">
+                                                    <h:outputText value="#{r.rutConsec.pueOrigen.stCiudad.stDpto.stPais.paiNom}" />
+                                                </p:column>
+
+                                                <p:column headerText="Ciudad origen" id="nomCiudadOrigen" style="width:10%" filterBy="#{r.rutConsec.pueOrigen.stCiudad.ciuNom}" filterMatchMode="contains">
+                                                    <h:outputText value="#{r.rutConsec.pueOrigen.stCiudad.ciuNom}" />
+                                                </p:column>
+
+                                                <p:column headerText="Puerto destino" id="nomPuertoDestino" style="width:10%" filterBy="#{r.rutConsec.pueDestino.pueNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{r.rutConsec.pueDestino.pueNombre}" />
+                                                </p:column>
+
+                                                <p:column headerText="Pais destino" id="nomPaisDestino" style="width:10%" filterBy="#{r.rutConsec.pueDestino.stCiudad.stDpto.stPais.paiNom}" filterMatchMode="contains">
+                                                    <h:outputText value="#{r.rutConsec.pueDestino.stCiudad.stDpto.stPais.paiNom}" />
+                                                </p:column>
+
+                                                <p:column headerText="Ciudad destino" id="nomCiudadDestino" style="width:10%" filterBy="#{r.rutConsec.pueDestino.stCiudad.ciuNom}" filterMatchMode="contains">
+                                                    <h:outputText value="#{r.rutConsec.pueDestino.stCiudad.ciuNom}" />
+                                                </p:column>
+
+                                                <p:column headerText="Ubicacion" id="nomUbiDestino" style="width:10%" filterBy="#{r.rutConsec.pueDestino.ubiConsec.ubiNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{r.rutConsec.pueDestino.ubiConsec.ubiNombre}" />
+                                                </p:column>
+
+                                            </p:autoComplete>
+
+                                            <p:outputLabel for="tiemTransp" value="Tiempo transporte (Cantidad dias)"/>
+                                            <p:inputText id="tiemTransp" value="#{stClienteController.tiempoTransporte}" size="30"/>
+
+
+                                            <p:outputLabel for="tipDias" value="Tipo dias"/>
+                                            <p:selectOneMenu id="tipDias" value="#{stClienteController.tipoDias}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" >
+                                                <f:selectItems value="#{stClienteController.listaTipoDias}"/>
+                                            </p:selectOneMenu>
+
+
+                                        </p:panelGrid>
+                                        <p:spacer/>
+                                        <div align="center">
+                                            <!--actualizar-->
+
+                                            <p:outputPanel>
+                                                <p:commandButton value="Guardar" action="#{stClienteController.creacionEdicionTiempo()}" process="@form" update="panelTiempos" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide();"/>  
+                                            </p:outputPanel>
+                                        </div>
+                                    </p:panel>
+                                </p:panel>
+                            </div>
+                        </p:panel>
+
+                        <p:panel header="Informacion Tiempos Generales" style="text-align: left" id="panelTiemposGenerales" toggleable="true">
+                            <div align="center">
+                                <p:panel id="panelPo6" >
+                                    <p:panelGrid columns="4" id="gridTiemposGenerales" >
+
+                                        <p:outputPanel id="contenedorDTableTiempoGenerales">
+                                            <p:dataTable value="#{stClienteController.listaTiemposGenerales}" id="DTtiemposGenerales" var="tiempoGeneral" rendered="#{stClienteController.flagPrepareEdit}" 
+                                                         paginator="true" 
+                                                         rows="5" 
+                                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         emptyMessage="No se encontraron proveedores"
+                                                         rowsPerPageTemplate="5,10,15" 
+                                                         styleClass="tablaRes">
+                                                <f:facet name="header">  
+                                                    Lista Tiempos
+                                                </f:facet>  
+
+                                                <p:column headerText="Servicio" sortBy="#{tiempoGeneral.cliTpcconsec.tipServic.tipNombre}" filterBy="#{tiempoGeneral.cliTpcconsec.tipServic.tipNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{tiempoGeneral.cliTpcconsec.tipServic.tipNombre}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Proveedor" sortBy="#{tiempoGeneral.cliTpcconsec.proConsec.proNombre}" filterBy="#{tiempoGeneral.cliTpcconsec.proConsec.proNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{tiempoGeneral.cliTpcconsec.proConsec.proNombre}" />
+                                                </p:column>
+
+                                                <p:column headerText="Horas Hábiles Preinspeccion" sortBy="#{tiempoGeneral.numHorHabPreinspeccion}" filterBy="#{tiempoGeneral.numHorHabPreinspeccion}" filterMatchMode="contains">
+                                                    <h:outputText value="#{tiempoGeneral.numHorHabPreinspeccion}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Horas Hábiles Aduana" sortBy="#{tiempoGeneral.numHorHabAduana}" filterBy="#{tiempoGeneral.numHorHabAduana}" filterMatchMode="contains">
+                                                    <h:outputText value="#{tiempoGeneral.numHorHabAduana}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Tipo dias" sortBy="#{tiempoGeneral.tieTransporte}" filterBy="#{tiempoGeneral.tieTransporte}" filterMatchMode="contains">
+                                                    <h:outputText value="#{tiempoGeneral.tipConsec.tipNombre}"/>
+                                                </p:column>
+
+                                                <!--Editar-->
+                                                <p:column headerText="Editar" style="font-size:11px; font-weight: bold"  >
+
+                                                    <p:commandLink>
+                                                        <p:ajax listener="#{stClienteController.editarTiempoGeneral(tiempoGeneral)}" update="@form" immediate="true"/>
+                                                        <p:graphicImage id="imgEdit" value="/resources/img/editar.png"  />
+
+                                                    </p:commandLink>
+
+                                                </p:column>
+
+                                                <!--Eliminar-->                          
+                                                <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold"  >
+                                                    <p:commandLink action="#{stClienteController.eliminarTiempo(tiempoGeneral)}" onclick="if (!confirm('Esta seguro que desea eliminar este registro?'))
+                                                                return false;" ajax="false" immediate="true" process="@form" update="DtableProductos">
+                                                        <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                                                    </p:commandLink>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:outputPanel>
+
+
+                                    </p:panelGrid>
+                                    <p:commandLink value="Añadir">
+                                        <p:ajax listener="#{stClienteController.habilitarPanelcrearTiempoGeneral()}" update="@form" immediate="true"/>
+                                    </p:commandLink>
+                                    <!--Panel de edicion-->                       
+                                    <p:outputPanel id="contenerdorPanelEdicionCreacionTiempoGeneral">
+                                        <p:panel header="Informacion de tiempo general #{stClienteController.stTiemposGenerales.cliTpcconsec.proConsec.proNombre}" id="panelEdicionCreacionTiempoGeneral" toggleable="true" style="text-align: left" rendered="#{stClienteController.activadorPanelEdicionCreacionTiemposGenerales}" >
+                                            <p:panelGrid columns="4">
+
+                                                <p:outputLabel value="Proveedor Logistico General" for="ProveeLogGeneral" rendered="#{stClienteController.activadorItemsCreacionTiemposGenerales}"/>
+                                                <p:selectOneMenu id="ProveeLogGeneral" value="#{stClienteController.longProveeGeneral}" rendered="#{stClienteController.activadorItemsCreacionTiemposGenerales}" 
+                                                                 style="width: 200px" filter="true" filterMatchMode="contains" effect="fade">
+                                                    <f:selectItems value="#{stClienteController.listaProveeXServicGeneral}"/>
+                                                </p:selectOneMenu>
+
+                                                <p:outputLabel for="tipDiasGeneral" value="Tipo dias"/>
+                                                <p:selectOneMenu id="tipDiasGeneral" value="#{stClienteController.tipoDiasGeneral}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" >
+                                                    <f:selectItems value="#{stClienteController.listaTipoDias}"/>
+                                                </p:selectOneMenu>
+
+                                                <p:outputLabel for="horasPreins" value="Horas Hábiles Preinspeccion"/>
+                                                <p:inputText id="horasPreins" value="#{stClienteController.horasPreinspeccion}" size="30"/>
+
+                                                <p:outputLabel for="horasAduana" value="Horas Hábiles Aduana"/>
+                                                <p:inputText id="horasAduana" value="#{stClienteController.horasAduana}" size="30"/>
+
+
+                                            </p:panelGrid>
+                                            <p:spacer/>
+                                            <div align="center">
+                                                <!--actualizar-->
+
+                                                <p:outputPanel>
+                                                    <p:commandButton value="Guardar" action="#{stClienteController.creacionEdicionTiempoGeneral()}" process="@this,ProveeLogGeneral,tipDiasGeneral,horasPreins,horasAduana" update="contenerdorPanelEdicionCreacionTiempoGeneral,contenedorDTableTiempoGenerales" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide();"/>  
+                                                </p:outputPanel>
+                                            </div>
+                                        </p:panel>
+                                    </p:outputPanel>
+                                </p:panel>
+                            </div>
+                        </p:panel>
+
+                    </p:tab>
+                    <p:tab id="tab5" title="Horarios">  
+                        <p:panel header="Informacion Horarios" style="text-align: left" id="panelHorariosPrincipal" toggleable="true">
+                            <div align="center">
+                                <p:panel id="panelPo7" >
+                                    <p:panelGrid columns="4" id="gridHorariosPrincipal" >
+
+                                        <p:outputPanel id="contenedorDTableHorariosGenerales">
+                                            <p:dataTable value="#{stClienteController.listaHorarios}" id="DTHorariosGenerales" var="horario" rendered="#{stClienteController.flagPrepareEdit}" 
+                                                         paginator="true" 
+                                                         rows="5" 
+                                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         emptyMessage="No se encontraron horarios"
+                                                         rowsPerPageTemplate="5,10,15" 
+                                                         styleClass="tablaRes">
+                                                <f:facet name="header">  
+                                                    Lista Horarios
+                                                </f:facet>  
+
+
+
+                                                <p:column headerText="Proveedor" sortBy="#{horario.cliTpcconsec.proConsec.proNombre}" filterBy="#{horario.cliTpcconsec.proConsec.proNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{horario.cliTpcconsec.proConsec.proNombre}" />
+                                                </p:column>
+
+                                                <p:column headerText="Dia" sortBy="#{horario.diaConsec.diaNombre}" filterBy="#{horario.diaConsec.diaNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{horario.diaConsec.diaNombre}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Hora inicio" sortBy="#{horario.horInicio}" filterBy="#{horario.horInicio}" filterMatchMode="contains">
+                                                    <h:outputText value="#{horario.horInicio}:#{horario.horMinsIni}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Hora fin" sortBy="#{horario.horFin}" filterBy="#{horario.horFin}" filterMatchMode="contains">
+                                                    <h:outputText value="#{horario.horFin}:#{horario.horMinsfin}"/>
+                                                </p:column>
+
+                                                <!--Editar-->
+                                                <p:column headerText="Editar" style="font-size:11px; font-weight: bold"  >
+
+                                                    <p:commandLink>
+                                                        <p:ajax listener="#{stClienteController.editarHorario(horario)}" update="@form" immediate="true"/>
+                                                        <p:graphicImage id="imgEdit" value="/resources/img/editar.png"  />
+
+                                                    </p:commandLink>
+
+                                                </p:column>
+
+                                                <!--Eliminar-->                          
+                                                <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold"  >
+                                                    <p:commandLink action="#{stClienteController.eliminarHorario(horario)}" onclick="if (!confirm('Esta seguro que desea eliminar este registro?'))
+                                                                return false;" ajax="false" immediate="true" process="@form" update="DtableProductos">
+                                                        <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                                                    </p:commandLink>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:outputPanel>
+
+
+                                    </p:panelGrid>
+                                    <p:commandLink value="Añadir">
+                                        <p:ajax listener="#{stClienteController.habilitarPanelCrearEditarHorario()}" update="@form" immediate="true"/>
+                                    </p:commandLink>
+                                    <!--Panel de edicion-->                       
+                                    <p:outputPanel id="contenerdorPanelEdicionCreacionHorario">
+                                        <p:panel header="Informacion de horario #{stClienteController.stHorario.cliTpcconsec.proConsec.proNombre}" id="panelEdicionCreacionHorario" toggleable="true" style="text-align: left" rendered="#{stClienteController.activadorPanelEdicionCreacionHorarios}" >
+                                            <p:panelGrid columns="4">
+
+                                                <p:outputLabel value="Proveedor Logistico General" for="ProveeLogHorario" rendered="#{stClienteController.activadorProveedorHorario}"/>
+                                                <p:selectOneMenu id="ProveeLogHorario" value="#{stClienteController.lproveeHorario}" rendered="#{stClienteController.activadorProveedorHorario}" 
+                                                                 style="width: 200px" filter="true" filterMatchMode="contains" effect="fade">
+                                                    <f:selectItems value="#{stClienteController.listaProveeOnlyServicGeneral}"/>
+                                                </p:selectOneMenu>
+
+                                                <p:outputLabel for="tipoDia" value="Dia"/>
+                                                <p:selectOneMenu id="tipoDia" value="#{stClienteController.tipoDiaHora}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" >
+                                                    <f:selectItems value="#{stClienteController.listaDiasSemana}"/>
+                                                </p:selectOneMenu>
+
+                                                <p:outputLabel for="horaIni" value="Hora Inicio" />
+                                                <p:calendar id="horaIni" value="#{stClienteController.horaInicio}" pattern="HH:mm a" timeOnly="true"  />
+
+                                                <p:outputLabel for="horaFin" value="Hora Fin" />
+                                                <p:calendar id="horaFin" value="#{stClienteController.horaFin}" pattern="HH:mm a" timeOnly="true"  />
+
+
+
+
+                                            </p:panelGrid>
+                                            <p:spacer/>
+                                            <div align="center">
+                                                <!--actualizar-->
+
+                                                <p:outputPanel>
+                                                    <p:commandButton value="Guardar" action="#{stClienteController.creacionEdicionHorario()}" process="@this,ProveeLogHorario,tipoDia,horaIni,horaFin" update="contenedorDTableHorariosGenerales,contenerdorPanelEdicionCreacionHorario" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide();"/>  
+                                                </p:outputPanel>
+                                            </div>
+                                        </p:panel>
+                                    </p:outputPanel>
+                                </p:panel>
+                            </div>
+                        </p:panel>
+                    </p:tab>
+                    <p:tab id="tab6" title="Depositos">
+                        <p:panel header="Informacion Depositos" style="text-align: left" id="panelDepositosPrincipal" toggleable="true">
+                            <div align="center">
+                                <p:panel id="panelPo8" >
+                                    <p:panelGrid columns="4" id="gridDepositosPrincipal" >
+
+                                        <p:outputPanel id="contenedorDTableDepositos">
+                                            <p:dataTable value="#{stClienteController.listaDepositosXCliente}" id="dtDepositos" var="deposito" rendered="#{stClienteController.flagPrepareEdit}" 
+                                                         paginator="true" 
+                                                         rows="5" 
+                                                         paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                                         emptyMessage="No se encontraron depositos"
+                                                         rowsPerPageTemplate="5,10,15" 
+                                                         styleClass="tablaRes">
+                                                <f:facet name="header">  
+                                                    Lista Depositos
+                                                </f:facet>  
+
+
+
+                                                <p:column headerText="Deposito" sortBy="#{deposito.stDeposit.depNombre}" filterBy="#{deposito.stDeposit.depNombre}" filterMatchMode="contains">
+                                                    <h:outputText value="#{deposito.stDeposit.depNombre}" />
+                                                </p:column>
+
+                                                <p:column headerText="Direccion Deposito" sortBy="#{deposito.stDeposit.depDirecc}" filterBy="#{deposito.stDeposit.depDirecc}" filterMatchMode="contains">
+                                                    <h:outputText value="#{deposito.stDeposit.depDirecc}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Pais" sortBy="#{deposito.stDeposit.paiId.paiNom}" filterBy="#{deposito.stDeposit.paiId.paiNom}" filterMatchMode="contains">
+                                                    <h:outputText value="#{deposito.stDeposit.paiId.paiNom}"/>
+                                                </p:column>
+
+                                                <p:column headerText="Departamento" sortBy="#{deposito.stDeposit.stCiudad.stDpto.depNom}" filterBy="#{deposito.stDeposit.stCiudad.stDpto.depNom}" filterMatchMode="contains">
+                                                    <h:outputText value="#{deposito.stDeposit.stCiudad.stDpto.depNom}"/>
+                                                </p:column>
+                                                
+                                                <p:column headerText="Ciudad" sortBy="#{deposito.stDeposit.stCiudad.ciuNom}" filterBy="#{deposito.stDeposit.stCiudad.ciuNom}" filterMatchMode="contains">
+                                                    <h:outputText value="#{deposito.stDeposit.stCiudad.ciuNom}"/>
+                                                </p:column>
+
+                             
+                                                <!--Eliminar-->                          
+                                                <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold"  >
+                                                    <p:commandLink action="#{stClienteController.eliminarDeposito(deposito)}" onclick="if (!confirm('Esta seguro que desea eliminar este registro?'))
+                                                                return false;" ajax="false" immediate="true" process="@form">
+                                                        <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                                                    </p:commandLink>
+                                                </p:column>
+
+                                            </p:dataTable>
+                                        </p:outputPanel>
+
+
+                                    </p:panelGrid>
+                                    <p:commandLink value="Añadir">
+                                        <p:ajax listener="#{stClienteController.habilitarPanelCrearEditarDeposito()}" update="@form" immediate="true"/>
+                                    </p:commandLink>
+                                    <!--Panel de edicion-->                       
+                                      <p:outputPanel id="contenedorPanelCreacionDeposito">
+                                        <p:panel header="Depositos disponibles para asociar al cliente: #{stClienteController.clienteSeleccionado.cliNombre}" id="panelEdicionCreacionDeposito" toggleable="true" style="text-align: left" 
+                                                 rendered="#{stClienteController.activadorPanelEdicionCreacionDepositos}" >
+                                            <p:panelGrid columns="4">
+                                              
+                                                <p:outputLabel value="Deposito" for="Deposito"/>
+                                                <p:selectOneMenu id="Deposito" value="#{stClienteController.longDeposito}" style="width: 200px" filter="true" filterMatchMode="contains" effect="fade"> 
+                                                    <f:selectItems value="#{stClienteController.listaDepositosSinAsociar}"/>
+                                                </p:selectOneMenu>
+
+                                            </p:panelGrid>
+                                            <p:spacer/>
+                                            <div align="center">
+                                                <!--crear-->
+                                                <p:outputPanel>
+                                                    <p:commandButton value="Guardar" action="#{stClienteController.creacionEdicionDeposito()}" process="@this,Deposito" update="contenedorDTableDepositos,contenedorPanelCreacionDeposito" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide();"/>  
+                                                </p:outputPanel>
+                                            </div>
+                                        </p:panel>
+                                    </p:outputPanel>
+                                </p:panel>
+                            </div>
+                        </p:panel>
+                    </p:tab>
+                </p:tabView>
+            </p:outputPanel>
+
+
+            <p:dialog showHeader="false" widgetVar="dlgLoading" resizable="false" modal="true" closable="false">
+                <p:panel>
+                    <p:graphicImage value="/resources/img/loading.gif"/>
+                </p:panel>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

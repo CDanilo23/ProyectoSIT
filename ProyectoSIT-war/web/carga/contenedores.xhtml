@@ -1,0 +1,81 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <p:outputPanel id="panelContenedores">
+        <div class="centered">
+            <p:panel header="Información de Contenedores">
+                <p:outputPanel>
+                    <h:outputText id="labeltab4" value=" Número de la carga: #{consultaCargaController.stCargaCurrent.carConsec}  - Número Documento Transporte: #{consultaCargaController.stCargaCurrent.carNumdoctra}  - Fecha Documento Transporte: " style="width: 85%; background-color: #E0ECF8; font-weight: bold"/>
+                    <h:outputText id="label2tab4" value="#{consultaCargaController.stCargaCurrent.carFecdoctra}" style="width: 85%; background-color: #E0ECF8; font-weight: bold">
+                        <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                    </h:outputText>
+                </p:outputPanel>
+            </p:panel>
+
+            <p:spacer/>
+            <p:panel id="contenedoresdatatable" header="Contenedores" style="width: 100%" toggleable="true">
+                <p:dataTable id="dataTableContenedores" value="#{contenedoresController.stContenedores}" var="contenedoresVar" paginator="true" rows="5" rowsPerPageTemplate="5,10,15" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                             emptyMessage="No se encontraron contenedores asociados a la carga"
+                             styleClass="tablaRes">
+                    <p:column headerText="Número del Contenedor">
+                        <h:outputText value="#{contenedoresVar.conNumero}"/>
+                    </p:column>
+                    <p:column headerText="Volumen">
+                        <h:outputText value="#{contenedoresVar.conVolumen}"/>
+                    </p:column>
+                    <p:column headerText="Unidad de Carga">
+                        <h:outputText value="#{contenedoresVar.uniConsec.uniNombre}"/>
+                    </p:column>
+
+                    <p:column headerText="Editar" style="font-size:11px; font-weight: bold">
+                        <p:commandLink>
+                            <p:graphicImage id="imgEdit" value="/resources/img/editar.png"/>
+                            <p:ajax listener="#{contenedoresController.consultaContenedorEdit(contenedoresVar)}" update=":search:panelPestanas:panelextercontenedor"/>
+                        </p:commandLink>
+                    </p:column>
+
+                    <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold"  >
+                        <p:commandLink action="#{contenedoresController.eliminarContenedor(contenedoresVar)}" update=":search:panelPestanas:panelContenedores" process="@form" immediate="true" onclick="if (!confirm('Esta seguro que desea eliminar este registro?')) return false;">
+                            <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                        </p:commandLink>
+                    </p:column>
+                </p:dataTable>
+
+                <p:spacer height="30"/>
+                <p:column>
+                    <p:commandLink value="Añadir Contenedor" actionListener="#{contenedoresController.consultaContenedor}" update=":search:panelPestanas:panelContenedores" immediate="true"/>
+                </p:column>
+                <p:spacer height="30"/>
+
+                <p:outputPanel id="panelextercontenedor">
+                    <p:panel id="panelFormcontenedor" header="Información" rendered="#{contenedoresController.flagContenedores}">
+                        <p:panelGrid columns="4">
+
+                            <p:outputLabel value="Número del contenedor" for="conNumero"/>
+                            <p:inputText id="conNumero" value="#{contenedoresController.stContenedorCurrent.conNumero}" required="true" requiredMessage="El número del contenedor es obligatorio."/>
+
+                            <p:outputLabel value="Unidad de Carga" for="unidadCarga"/>
+                            <p:selectOneMenu id="unidadCarga" value="#{contenedoresController.unidadCarga}" required="true" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" requiredMessage="La unidad de carga es obligatoria.">
+                                <f:selectItems value="#{contenedoresController.itemsStUnicarg}"/>
+                            </p:selectOneMenu>
+
+                            <p:outputLabel value="Volumen" for="conVolumen"/>
+                            <p:inputText id="conVolumen" value="#{contenedoresController.stContenedorCurrent.conVolumen}"/>
+                        </p:panelGrid>
+                        <p:spacer/>
+                        <div align="center">
+                            <p:outputPanel>
+                                <p:commandButton value="Guardar" action="#{contenedoresController.updateContenedor}" update="contenedoresdatatable,panelextercontenedor" process="@form"/>  
+                                <p:commandButton value="Cancelar" actionListener="#{contenedoresController.cancelarContenedor}" update="panelextercontenedor" immediate="true"/>  
+                            </p:outputPanel>
+                        </div>
+                    </p:panel>
+                </p:outputPanel>
+            </p:panel>
+        </div>
+    </p:outputPanel>
+</ui:composition>
+

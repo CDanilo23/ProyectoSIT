@@ -1,0 +1,237 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+
+    <p:outputPanel id="contenedorAduanas">
+        <div align="center">
+            <p:spacer/>
+            <p:outputPanel id="contenedorDataTableAduanas">
+                <p:panel id="panelAduanas" header="Informacion Aduanas" style="width: 100%" toggleable="true" rendered="#{consultaCargaController.panelCargas}">
+                    <p:spacer>
+                        <div class="centered">
+                            <h:outputText value="Numero Do #{consultaCargaController.stCargaCurrent.carDoalma}" style="width: 85%; background-color: #E0ECF8; font-weight: bold"/>
+                        </div>
+                    </p:spacer>
+                    <p:dataTable id="dataTableAduanas" value="#{aduanasController.listaAduanas}" var="declaracion" paginator="true" rows="5" rowsPerPageTemplate="5,10,15"
+                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                 emptyMessage="No se encontraron declaraciones"
+                                 styleClass="tablaRes" scrollWidth="890" scrollable="true">
+                        <f:facet name="header">  
+                            Declaraciones de importacion
+                        </f:facet>  
+
+                        <!--Editar--> 
+                        <p:column headerText="Editar" style="font-size:11px; font-weight: bold" width="50">
+                            <p:commandLink>
+                                <p:graphicImage id="imgEdit" value="/resources/img/editar.png"/>
+                                <p:ajax  listener="#{aduanasController.editarDeclaracion(declaracion)}" update="@form" immediate="true"/>
+                            </p:commandLink>
+                        </p:column>
+                        <!--Eliminar-->  
+                        <p:column headerText="Eliminar" style="font-size:11px; font-weight: bold" width="50" >
+                            <p:commandLink action="#{aduanasController.eliminarDeclaracion(declaracion)}" update=":search:panelPestanas:contenedorDataTableAduanas" process="@form" immediate="true" onclick="if (!confirm('Esta seguro que desea eliminar este registro?'))
+                                        return false;">
+                                <p:graphicImage id="imgElim" value="/resources/img/eliminar.png"  />
+                            </p:commandLink>
+                        </p:column>
+
+                        <p:column headerText="Fecha de levante" sortBy="#{declaracion.aduFeclevreal}" filterBy="#{declaracion.aduFeclevreal}" filterMatchMode="contains" width="120">
+                            <h:outputText value="#{declaracion.aduFeclevreal}">
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm:ss" timeZone="America/Bogota"/>
+                            </h:outputText>
+                        </p:column>
+                       
+                        <p:column headerText="Valor FOB" sortBy="#{declaracion.aduValfob}" filterBy="#{declaracion.aduValfob}" filterMatchMode="contains" width="150">
+                            <h:outputText value="#{declaracion.aduValfob}"/>
+                        </p:column>
+                        <p:column headerText="Costo Flete" sortBy="#{declaracion.aduCosfle}" filterBy="#{declaracion.aduCosfle}" filterMatchMode="contains" width="150">
+                            <h:outputText value="#{declaracion.aduCosfle}"/>
+                        </p:column>
+                        <p:column headerText="Seguros" sortBy="#{declaracion.aduSeguro}" filterBy="#{declaracion.aduSeguro}" filterMatchMode="contains" width="150">
+                            <h:outputText value="#{declaracion.aduSeguro}"/>
+                        </p:column>
+                        <p:column headerText="Otros gastos" sortBy="#{declaracion.aduOtrgas}" filterBy="#{declaracion.aduOtrgas}" filterMatchMode="contains" width="150">
+                            <h:outputText value="#{declaracion.aduOtrgas}"/>
+                        </p:column>
+
+                        <p:column headerText="Valor CIF" sortBy="#{declaracion.aduCif}" filterBy="#{declaracion.aduCif}" filterMatchMode="contains"  width="150">
+                            <h:outputText value="#{declaracion.aduCif}"/>
+                        </p:column>
+
+                        <p:column headerText="Numero Factura Agenciamiento aduanero" sortBy="#{declaracion.aduCif}" filterBy="#{declaracion.aduCif}" filterMatchMode="contains"  width="150">
+                            <h:outputText value="#{declaracion.aduCif}"/>
+                        </p:column>
+
+                        <p:column headerText="Valor Factura agenciamiento aduanero" sortBy="#{declaracion.aduValfac}" filterBy="#{declaracion.aduValfac}" filterMatchMode="contains"  width="150">
+                            <h:outputText value="#{declaracion.aduValfac}"/>
+                        </p:column>
+
+                        <p:column headerText="Número declaración de importación" sortBy="#{declaracion.aduNumdec}" filterBy="#{declaracion.aduNumdec}" filterMatchMode="contains"  width="150">
+                            <h:outputText value="#{declaracion.aduNumdec}"/>
+                        </p:column>
+
+                        <p:column headerText="Fecha solicitud Licencia" sortBy="#{declaracion.aduFecsollic}" filterBy="#{declaracion.aduFecsollic}" filterMatchMode="contains"  width="120">
+                            <h:outputText value="#{declaracion.aduFecsollic}">
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm:ss" timeZone="America/Bogota"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Fecha presentación Licencia" sortBy="#{declaracion.aduFecprelic}" filterBy="#{declaracion.aduFecprelic}" filterMatchMode="contains" width="120">
+                            <h:outputText value="#{declaracion.aduFecprelic}">
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm:ss" timeZone="America/Bogota"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Fecha aprobación Licencia" sortBy="#{declaracion.aduFecaprlic}" filterBy="#{declaracion.aduFecaprlic}" filterMatchMode="contains" width="120">
+                            <h:outputText value="#{declaracion.aduFecaprlic}">
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm:ss" timeZone="America/Bogota"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Fecha recibo último Doc" sortBy="#{declaracion.aduFecrecultdoc}" filterBy="#{declaracion.aduFecrecultdoc}" filterMatchMode="contains" width="120">
+                            <h:outputText value="#{declaracion.aduFecrecultdoc}">
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm:ss" timeZone="America/Bogota"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Fecha recepción certif origen" sortBy="#{declaracion.aduFecreccerori}" filterBy="#{declaracion.aduFecreccerori}" filterMatchMode="contains" width="120">
+                            <h:outputText value="#{declaracion.aduFecreccerori}">
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm:ss" timeZone="America/Bogota"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Fecha liberación documentos por agente de carga" sortBy="#{declaracion.aduFeclib}" filterBy="#{declaracion.aduFeclib}" filterMatchMode="contains" width="120">
+                            <h:outputText value="#{declaracion.aduFeclib}">
+                                <f:convertDateTime type="date" pattern="dd-MM-yyyy HH:mm:ss" timeZone="America/Bogota"/>
+                            </h:outputText>
+                        </p:column>
+
+                    </p:dataTable>
+                    <!--Añadir-->
+                    <p:commandLink value="Añadir">
+                        <p:ajax listener="#{aduanasController.habilitarPanelCreacionEdicionDeclaracion()}" update="@form" immediate="true"/>
+                    </p:commandLink>
+                </p:panel>
+            </p:outputPanel>  
+            <p:outputPanel id="contenedorPanelCreacionEdicionDeclaracion">
+                <p:panel header="Informacion de declaracion" id="panelEdicionCreacionDeclaracion" toggleable="true" style="text-align: left" rendered="#{aduanasController.flagPanelEdicionCreacionDeclaracion}" >
+                    <p:panelGrid columns="4">
+
+                        <p:outputLabel value="Fecha levante" for="fechalevanteReal"/>
+                        <p:commandLink onclick="calendarWidget1.setDate(null)">
+                            <p:panelGrid columns="2">
+                                <p:calendar id="fechalevanteReal" value="#{aduanasController.stAduana.aduFeclevreal}" widgetVar="calendarWidget1" size="20" pattern="dd/MM/yyyy HH:mm:ss" readonlyInput="true"/>
+                                <p:graphicImage id="grow1" value="/resources/img/escobita.png">
+                                    <p:tooltip for="grow1" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                </p:graphicImage>
+                            </p:panelGrid>
+                        </p:commandLink>
+
+                        <p:outputLabel value="Valor FOB" for="valorFob"/>
+                        <p:inputText id="valorFob" value="#{aduanasController.stAduana.aduValfob}" size="30"/>
+
+                        <p:outputLabel value="Costo flete" for="costoFlete"/>
+                        <p:inputText id="costoFlete" value="#{aduanasController.stAduana.aduCosfle}" size="30"/>
+
+                        <p:outputLabel value="Seguros" for="seguros"/>
+                        <p:inputText id="seguros" value="#{aduanasController.stAduana.aduSeguro}" size="30"/>
+
+                        <p:outputLabel value="Otros gastos" for="otrosGastos"/>
+                        <p:inputText id="otrosGastos" value="#{aduanasController.stAduana.aduOtrgas}" size="30"/>
+
+                        <p:outputLabel value="Valor CIF" for="valorCif"/>
+                        <p:inputText id="valorCif" value="#{aduanasController.stAduana.aduCif}" size="30"/>
+
+                        <p:outputLabel value="Numero Factura Agenciamiento aduanero" for="NumFacAgenAdua"/>
+                        <p:inputText id="NumFacAgenAdua" value="#{aduanasController.stAduana.aduNumfac}" size="30"/>
+
+                        <p:outputLabel value="Valor Factura agenciamiento aduanero" for="valorFacAgenAdua"/>
+                        <p:inputText id="valorFacAgenAdua" value="#{aduanasController.stAduana.aduValfac}" size="30"/>
+
+                        <p:outputLabel value="Número declaración de importación" for="NumDeclaImport"/>
+                        <p:inputText id="NumDeclaImport" value="#{aduanasController.stAduana.aduNumdec}" size="30"/>
+
+                        <p:outputLabel value="Fecha solicitud licencia" for="fechaSolicitudLicencia"/>
+                        <p:commandLink onclick="calendarWidget2.setDate(null)">
+                            <p:panelGrid columns="2" >
+                                <p:calendar id="fechaSolicitudLicencia" value="#{aduanasController.stAduana.aduFecsollic}" widgetVar="calendarWidget2" size="20" pattern="dd/MM/yyyy HH:mm:ss" readonlyInput="true"/>
+                                <p:graphicImage id="grow2" value="/resources/img/escobita.png">
+                                    <p:tooltip for="grow2" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                </p:graphicImage>
+                            </p:panelGrid>
+                        </p:commandLink>
+
+
+                        <p:outputLabel value="Fecha presentacion licencia" for="fechaPresLic"/>
+                        <p:commandLink onclick="calendarWidget3.setDate(null)">
+                            <p:panelGrid columns="2" >
+                                <p:calendar id="fechaPresLic" value="#{aduanasController.stAduana.aduFecprelic}" widgetVar="calendarWidget3" size="20" pattern="dd/MM/yyyy HH:mm:ss" readonlyInput="true"/>
+                                <p:graphicImage id="grow3" value="/resources/img/escobita.png">
+                                    <p:tooltip for="grow3" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                </p:graphicImage>
+                            </p:panelGrid>
+                        </p:commandLink>
+
+                        <p:outputLabel value="Fecha aprobación licencia" for="fechaAprobLicencia"/>
+                        <p:commandLink onclick="calendarWidget4.setDate(null)">
+                            <p:panelGrid columns="2" >
+                                <p:calendar id="fechaAprobLicencia" value="#{aduanasController.stAduana.aduFecaprlic}" widgetVar="calendarWidget4" size="20" pattern="dd/MM/yyyy HH:mm:ss" readonlyInput="true"/>
+                                <p:graphicImage id="grow4" value="/resources/img/escobita.png">
+                                    <p:tooltip for="grow4" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                </p:graphicImage>
+                            </p:panelGrid>
+                        </p:commandLink>
+
+                        <p:outputLabel value="Fecha recibo último doc" for="fechaReciboUltimoDoc"/>
+                        <p:commandLink onclick="calendarWidget5.setDate(null)">
+                            <p:panelGrid columns="2" >
+                                <p:calendar id="fechaReciboUltimoDoc" value="#{aduanasController.stAduana.aduFecrecultdoc}" widgetVar="calendarWidget5" size="20" pattern="dd/MM/yyyy HH:mm:ss" readonlyInput="true"/>
+                                <p:graphicImage id="grow5" value="/resources/img/escobita.png">
+                                    <p:tooltip for="grow5" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                </p:graphicImage>
+                            </p:panelGrid>
+                        </p:commandLink>
+
+                        <p:outputLabel value="Fecha recepción certif origen" for="fechaRecepCertiOrig"/>
+                        <p:commandLink onclick="calendarWidget6.setDate(null)">
+                            <p:panelGrid columns="2" >
+                                <p:calendar id="fechaRecepCertiOrig" value="#{aduanasController.stAduana.aduFecreccerori}" widgetVar="calendarWidget6" size="20" pattern="dd/MM/yyyy HH:mm:ss" readonlyInput="true"/>
+                                <p:graphicImage id="grow6" value="/resources/img/escobita.png">
+                                    <p:tooltip for="grow6" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                </p:graphicImage>
+                            </p:panelGrid>
+                        </p:commandLink>
+
+                        <p:outputLabel value="Fecha liberación documentos por agente de carga" for="fechaliberaDocAgenCarg"/>
+                        <p:commandLink onclick="calendarWidget7.setDate(null)">
+                            <p:panelGrid columns="2" >
+                                <p:calendar id="fechaliberaDocAgenCarg" value="#{aduanasController.stAduana.aduFeclib}" widgetVar="calendarWidget7" size="20" pattern="dd/MM/yyyy HH:mm:ss" readonlyInput="true"/>
+                                <p:graphicImage id="grow7" value="/resources/img/escobita.png">
+                                    <p:tooltip for="grow7" value="Este boton limpiara la fecha" showEffect="clip" hideEffect="explode" />  
+                                </p:graphicImage>
+                            </p:panelGrid>
+                        </p:commandLink>
+
+                    </p:panelGrid>
+                    <p:spacer/>
+                    <div align="center">
+                        <!--Persistir-->
+
+                        <p:outputPanel rendered="#{aduanasController.activadorBotonPersistir}">
+                            <p:commandButton value="Guardar" action="#{aduanasController.crearDeclaracion()}" process="@this,fechalevanteReal,valorFob,costoFlete,seguros,otrosGastos,valorCif,NumFacAgenAdua,valorFacAgenAdua,NumDeclaImport,fechaSolicitudLicencia,fechaPresLic,fechaAprobLicencia,fechaReciboUltimoDoc,fechaRecepCertiOrig,fechaliberaDocAgenCarg" update="contenedorPanelCreacionEdicionDeclaracion,contenedorDataTableAduanas" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide();"/>  
+                        </p:outputPanel>
+
+                        <!--Actualizar-->
+
+                        <p:outputPanel rendered="#{aduanasController.activadorBotonActualizar}">
+                            <p:commandButton value="Actualizar" action="#{aduanasController.actualizarDeclaracion()}" process="@this,fechalevanteReal,valorFob,costoFlete,seguros,otrosGastos,valorCif,NumFacAgenAdua,valorFacAgenAdua,NumDeclaImport,fechaSolicitudLicencia,fechaPresLic,fechaAprobLicencia,fechaReciboUltimoDoc,fechaRecepCertiOrig,fechaliberaDocAgenCarg" update="contenedorPanelCreacionEdicionDeclaracion,contenedorDataTableAduanas" onclick="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide();"/>  
+                        </p:outputPanel>
+                    </div>
+                </p:panel>
+            </p:outputPanel>
+        </div>
+    </p:outputPanel>
+</ui:composition>

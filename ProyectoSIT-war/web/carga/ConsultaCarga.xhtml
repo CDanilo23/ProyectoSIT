@@ -1,0 +1,135 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                template="../templates/templateContenido.xhtml">
+    <ui:define name="contenido">
+        <f:view>
+            <f:event type="preRenderComponent" listener="#{consultaCargaController.init()}"/>
+        </f:view>
+        <h:form id="search" onkeypress="if (event.keyCode === 13) {
+                    return false;
+                }">
+
+            <h1>Actualizaciones de Cargas</h1>
+            <p:panel header="Consultar cliente" toggleable="true">  
+                <div align="center">
+                    <p:panelGrid columns="3">  
+                        <p:outputLabel value="Cliente:"/>
+                        <p:autoComplete id="ceTerceroCliente" minQueryLength="3" scrollHeight="150"  size="75" 
+                                        value="#{consultaCargaController.clienteSeleccionadoAutocomplete}" emptyMessage="No existen clientes con estos criterios de consulta"
+                                        completeMethod="#{consultaCargaController.findAllTerceroDescription}"
+                                        var="p" itemLabel="#{p.cliNombre}" itemValue="#{p}" converter="stClienteCargaConverter"  
+                                        forceSelection="true" valueChangeListener="#{consultaCargaController.consultaCargasClientehandleSelect}">
+                            <p:ajax event="itemSelect" update="paneltabprincipal,panelPestanas" listener="#{consultaCargaController.consultaCargasCliente}"  onstart="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide()"/>
+                            <p:column headerText="Nro Identificacion">
+                                #{p.cliNit}
+                            </p:column>
+                            <p:column headerText="Nombre">
+                                #{p.cliNombre}
+                            </p:column>
+                        </p:autoComplete>
+                        <p:graphicImage id="grow" value="/resources/img/helpIcon.png" />
+                        <p:tooltip for="grow" value="Digite 3 letras que contengan el nombre del cliente o el numero de nit completo" showEffect="clip" hideEffect="explode" />  
+                    </p:panelGrid> 
+
+                    <p:outputPanel id="paneltabprincipal">
+                        <p:panel id="panelbusquedaCargas" header="Cargas" style="width: 100%" toggleable="true" rendered="#{consultaCargaController.panelCargas}">
+                            <p:spacer>
+                                <div class="centered">
+                                    <h:outputText value=" Cliente: #{consultaCargaController.clienteSeleccionado.cliNombre}" style="width: 85%; background-color: #E0ECF8; font-weight: bold"/>
+                                </div>
+                            </p:spacer>
+                            <p:dataTable id="dataTableCargas" value="#{consultaCargaController.stCargas}" var="item2" paginator="true" rows="5" rowsPerPageTemplate="5,10,15" paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"  
+                                         emptyMessage="No se encontraron cargas asociadas al cliente"
+                                         styleClass="tablaRes" scrollWidth="900" scrollable="true">
+                                <p:column headerText="Editar" style="font-size:11px; font-weight: bold" width="40">
+                                    <p:commandLink>
+                                        <p:graphicImage id="imgEdit" value="/resources/img/editar.png"/>
+                                        <p:ajax  listener="#{consultaCargaController.consultaCarga(item2)}" update="@form" immediate="true"/>
+                                    </p:commandLink>
+                                </p:column>
+                                <p:column headerText="Número de Do Almaviva" sortBy="#{item2.carDoalma}" filterBy="#{item2.carDoalma}"  filterValue="#{item2.carDoalma}" filterMatchMode="contains" width="150">
+                                    <h:outputText value="#{item2.carDoalma}"/>
+                                </p:column>
+                                <p:column headerText="Número de Carga" sortBy="#{item2.carConsec}" filterBy="#{item2.carConsec}" filterMatchMode="contains" width="150">
+                                    <h:outputText value="#{item2.carConsec}"/>
+                                </p:column>
+                                <p:column headerText="Tipo operación" sortBy="#{item2.tipOpera.tipNombre}" filterBy="#{item2.tipOpera.tipNombre}" filterMatchMode="contains" width="150">
+                                    <h:outputText value="#{item2.tipOpera.tipNombre}"/>
+                                </p:column>
+                                <p:column headerText="Modo de Transporte" sortBy="#{item2.modConsec.modNombre}" filterBy="#{item2.modConsec.modNombre}" filterMatchMode="contains" width="150">
+                                    <h:outputText value="#{item2.modConsec.modNombre}"/>
+                                </p:column>
+                                <p:column headerText="Tipo de Embarque" sortBy="#{item2.tipConsec.tipNombre}" filterBy="#{item2.tipConsec.tipNombre}" filterMatchMode="contains" width="150">
+                                    <h:outputText value="#{item2.tipConsec.tipNombre}"/>
+                                </p:column>
+
+                                <p:column headerText="Proveedor aduama" sortBy="#{item2.cliTpcconsec.proConsec.proNombre}" filterBy="#{item2.cliTpcconsec.proConsec.proNombre}" filterMatchMode="contains"  width="150">
+                                    <h:outputText value="#{item2.cliTpcconsec.proConsec.proNombre}"/>
+                                </p:column>
+
+                                <p:column headerText="Deposito Destino" sortBy="#{item2.cliTpcconsec.proConsec.proNombre}" filterBy="#{item2.cliTpcconsec.proConsec.proNombre}" filterMatchMode="contains" width="150">
+                                    <h:outputText value="#{item2.cliTpcconsec.proConsec.proNombre}"/>
+                                </p:column>
+
+                                <p:column headerText="Número de Do Externo" sortBy="#{item2.carDo}" filterBy="#{item2.carDo}" filterMatchMode="contains" width="150">
+                                    <h:outputText value="#{item2.carDo}"/>
+                                </p:column>
+
+                                <p:column headerText="Número de Documento transporte" sortBy="#{item2.carNumdoctra}" filterBy="#{item2.carNumdoctra}" filterMatchMode="contains" width="150">
+                                    <h:outputText value="#{item2.carNumdoctra}"/>
+                                </p:column>
+
+                                <p:column headerText="Fecha de documento Transporte" sortBy="#{item2.carFecdoctra}" filterBy="#{item2.carFecdoctra}" filterMatchMode="contains" width="150">
+                                    <h:outputText value="#{item2.carFecdoctra}">
+                                        <f:convertDateTime type="date" pattern="dd-MM-yyyy"/>
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+                        </p:panel>
+                    </p:outputPanel>
+                </div>
+            </p:panel>
+
+            <p:spacer/>
+
+            <p:tabView  id="panelPestanas" rendered="#{consultaCargaController.flagTabView}" cache="false">
+                <p:ajax event="tabChange" update="panelinfoGeneral,panelFacturas,paneltransporte,panelContenedores,contenedorAduanas"  listener="#{consultaCargaController.cambioTab}" onstart="PF('dlgLoading').show()" oncomplete="PF('dlgLoading').hide()"/>
+
+                <p:tab id="tab1" title="Carga">
+                    <ui:include src="infoGeneral.xhtml" />
+                </p:tab>
+
+                <p:tab id="tab2" title="Facturas y Ordenes de Compra">  
+                    <ui:include src="facturas.xhtml" />
+                </p:tab>
+
+                <p:tab id="tab3" title="Transporte">
+                    <ui:include src="transporte.xhtml" />
+                </p:tab>
+
+                <p:tab id="tab4" title="Contenedores" rendered="#{consultaCargaController.flagContenedores}">
+                    <ui:include src="contenedores.xhtml"/>
+                </p:tab>
+
+                <p:tab id="tab5" title="Aduana">
+                    <ui:include src="Aduanas.xhtml"/>
+                </p:tab>
+                <p:tab id="tab6" title="Indicadores y Seguimiento de fechas">
+                </p:tab>
+                <p:tab id="tab7" title="Deposito">
+                </p:tab>
+            </p:tabView>
+
+            <p:dialog showHeader="false" widgetVar="dlgLoading" resizable="false" modal="true" closable="false">
+                <p:panel>
+                    <p:graphicImage value="/resources/img/loading.gif"/>
+                </p:panel>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+
+

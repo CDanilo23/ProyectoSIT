@@ -1,0 +1,69 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui">
+    <p:outputPanel id="panelinfoGeneral">
+        <p:panel id="panelCreacion" header="Informacion Carga General" style="text-align: left">
+            <p:panelGrid columns="4">
+                <p:outputLabel value="Número de Carga" for="carConsec"/>
+                <p:inputText id="carConsec" value="#{consultaCargaController.stCargaCurrent.carConsec}" style="background-color: #E0ECF8; font-weight: bold" readonly="true"/>
+
+                <p:outputLabel value="Fecha de la operación" for="carFecope"/>
+                <p:calendar id="carFecope" value="#{consultaCargaController.stCargaCurrent.carFecope}" size="12" pattern="dd/MM/yyyy" readonlyInput="true" required="true" requiredMessage="La fecha de operación es obligatoria."/>
+
+
+                <p:outputLabel value="Tipo de operación" for="tipOperacion"/>
+                <p:selectOneMenu id="tipOperacion" value="#{consultaCargaController.tipOperacion}" required="true" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" requiredMessage="El tipo de operación es obligatorio." valueChangeListener="#{consultaCargaController.cambiarTipoOperacion}" disabled="#{consultaCargaController.flagdisableTipOperacion}">
+                    <f:selectItems value="#{consultaCargaController.itemsStTipoper}"/>
+                    <p:ajax update="modTransporte"/>
+                </p:selectOneMenu>
+
+                <p:column>
+                    <p:outputLabel value="Modo de transporte" for="modTransporte"/>
+                    <p:graphicImage id="mt" value="/resources/img/helpIcon.png" />
+                    <p:tooltip for="mt" value="Para seleccionar el modo de transporte debe escoger el tipo de operación" showEffect="clip" hideEffect="explode"/>
+                </p:column>
+                <p:selectOneMenu value="#{consultaCargaController.modTransporte}" id="modTransporte" required="true" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" requiredMessage="El modo de transporte es obligatorio." disabled="#{consultaCargaController.flagdisableTipOperacion}">
+                    <f:selectItems value="#{consultaCargaController.itemsStModTran}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Proveedor de aduana" for="proAduana"/>
+                <p:selectOneMenu id="proAduana" value="#{consultaCargaController.proAduana}" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                    <f:selectItems value="#{consultaCargaController.proveeAduana}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Deposito Destino" for="depCliente"/>
+                <p:selectOneMenu value="#{consultaCargaController.depCliente}" id="depCliente" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade">
+                    <f:selectItems value="#{consultaCargaController.depositosCliente}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Tipo de embarque" for="tipEmbarqueCarga"/>
+                <p:selectOneMenu value="#{consultaCargaController.tipEmbarqueCarga}" id="tipEmbarqueCarga" required="true" style="width: 200px" filter="true" filterMatchMode="contains"  effect="fade" requiredMessage="El tipo de embarque es obligatorio.">
+                    <f:selectItems value="#{consultaCargaController.tiposEmbarque}"/>
+                </p:selectOneMenu>
+
+                <p:outputLabel value="Número de Do Externo" for="carDo"/>
+                <p:inputText id="carDo" value="#{consultaCargaController.stCargaCurrent.carDo}"/>
+
+                <p:outputLabel value="Número de Do Almaviva" for="carDoalma"/>
+                <p:inputText id="carDoalma" value="#{consultaCargaController.stCargaCurrent.carDoalma}"/>
+
+                <p:outputLabel value="Número de Documento transporte" for="carNumdoctra"/>
+                <p:inputText id="carNumdoctra" value="#{consultaCargaController.stCargaCurrent.carNumdoctra}"/>
+
+                <p:outputLabel value="Fecha de documento Transporte" for="carFecdoctra"/>
+                <p:calendar id="carFecdoctra" value="#{consultaCargaController.stCargaCurrent.carFecdoctra}" size="12" pattern="dd/MM/yyyy" readonlyInput="true"/>
+            </p:panelGrid>
+            <p:spacer/>
+            <div align="center">
+                <p:outputPanel>
+                    <p:commandButton value="Actualizar Información general" action="#{consultaCargaController.updateCarga}" update="panelCreacion,:search:paneltabprincipal,labeltab3,label2tab3,paneltotalcarMaritima,paneltotalcarAerea,panelPestanas" process="@form"/>  
+                    <p:commandButton value="Inactivar Carga General" actionListener="#{consultaCargaController.inactivarCargaGeneral}" update="@form,:search:panelPestanas,:search:dataTableCargas" immediate="true" onclick="if (!confirm('Esta seguro que desea inactivar la carga?')) return false;" />  
+                </p:outputPanel>
+            </div>
+        </p:panel>
+    </p:outputPanel>
+</ui:composition>
+
